@@ -21,6 +21,11 @@ a {
 	}
 }
 
+a,
+button {
+	cursor: pointer;
+}
+
 .visually-hidden {
 	position: absolute;
 	clip: rect(0 0 0 0);

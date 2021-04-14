@@ -1,0 +1,10 @@
+$primary-color: hsl(240, 67%, 94%);
+$primary-dark-1: scale-color($primary-color, $lightness: -5%);
+$primary-dark-2: scale-color($primary-color, $lightness: -10%);
+$primary-dark-3: scale-color($primary-color, $lightness: -15%);
+
+@mixin flex-align-center {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
