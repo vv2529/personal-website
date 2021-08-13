@@ -1,7 +1,7 @@
-import Meta from './Meta';
-import Nav from './Nav';
-import PageContainer from './PageContainer';
-import css from '../css/Layout.module.css';
+import Meta from './Meta'
+import Nav from './Nav'
+import PageContainer from './PageContainer'
+import css from '../css/Layout.module.css'
 
 const Layout = ({ children }) => {
 	return (
@@ -17,4 +17,4 @@ const Layout = ({ children }) => {
 	);
 };
 
-export default Layout;
+export default Layout

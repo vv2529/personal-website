@@ -1,4 +1,4 @@
-import Head from 'next/head';
+import Head from 'next/head'
 
 const Meta = ({ title = 'Next.js app', keywords = '', desc = '', favicon = '' }) => {
 	return (
@@ -13,4 +13,4 @@ const Meta = ({ title = 'Next.js app', keywords = '', desc = '', favicon = '' })
 	);
 };
 
-export default Meta;
+export default Meta

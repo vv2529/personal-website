@@ -1,5 +1,5 @@
-import { IoMdRefresh } from 'react-icons/io';
-import css from '../css/PageContainer.module.css';
+import { IoMdRefresh } from 'react-icons/io'
+import css from '../css/PageContainer.module.css'
 
 const PageContainer = ({ children }) => {
 	return (
@@ -12,4 +12,4 @@ const PageContainer = ({ children }) => {
 	);
 };
 
-export default PageContainer;
+export default PageContainer
