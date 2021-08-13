@@ -1,7 +1,9 @@
-$primary-color: hsl(240, 67%, 94%);
-$primary-dark-1: scale-color($primary-color, $lightness: -5%);
-$primary-dark-2: scale-color($primary-color, $lightness: -10%);
-$primary-dark-3: scale-color($primary-color, $lightness: -15%);
+$primary-color: hsl(240, 0%, 15%);
+// $primary-dark-1: scale-color($primary-color, $lightness: -5%);
+// $primary-dark-2: scale-color($primary-color, $lightness: -10%);
+// $primary-dark-3: scale-color($primary-color, $lightness: -15%);
+$primary-dark-1: hsl(240, 0%, 10%);
+$primary-dark-2: hsl(240, 0%, 0%);
 
 @mixin flex-align-center {
 	display: flex;

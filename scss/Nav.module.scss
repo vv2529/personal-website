@@ -3,7 +3,7 @@
 .nav {
 	min-height: 50px;
 	max-height: 50px;
-	background: $primary-dark-2;
+	background: $primary-dark-1;
 
 	@mixin full-height-align-center {
 		display: flex;
@@ -24,24 +24,24 @@
 
 	& a {
 		@include full-height-align-center;
-		color: #444;
-		background: $primary-dark-2;
+		color: #bbb;
+		background: $primary-dark-1;
 		padding: 0 10px;
 	}
 	& a:hover,
 	& a:focus {
 		text-decoration: none;
 		outline: none;
-		filter: brightness(0.95);
+		filter: brightness(0.9);
 	}
 	& a:active {
-		filter: brightness(0.9);
+		filter: brightness(0.8);
 	}
 
 	&-li-primary a {
 		padding: 0 25px 0 15px;
-		background: $primary-dark-3;
-		color: #000;
+		background: $primary-dark-2;
+		color: #fff;
 		font-size: 1.2em;
 		font-weight: 600;
 	}

@@ -1,6 +1,5 @@
 import Meta from './Meta'
 import Nav from './Nav'
-import PageContainer from './PageContainer'
 import css from '../css/Layout.module.css'
 
 const Layout = ({ children }) => {
@@ -9,12 +8,10 @@ const Layout = ({ children }) => {
 			<Meta title="Next" />
 			<div className={css['container']}>
 				<Nav />
-				<main className={css['main']}>
-					<PageContainer>{children}</PageContainer>
-				</main>
+				<main className={css['main']}>{children}</main>
 			</div>
 		</>
-	);
-};
+	)
+}
 
 export default Layout

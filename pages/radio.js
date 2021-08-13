@@ -1,7 +1,14 @@
-export default function Home() {
+import PageContainer from '../components/PageContainer'
+
+export default function Radio() {
 	return (
-		<>
-			<b>Radio</b>
-		</>
-	);
+		<PageContainer>
+			<b>
+				R<br />
+				a<br />
+				d<br />
+				i<br />o
+			</b>
+		</PageContainer>
+	)
 }
