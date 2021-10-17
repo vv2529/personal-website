@@ -6,7 +6,7 @@ function App({ Component, pageProps }) {
 		<Layout>
 			<Component {...pageProps} />
 		</Layout>
-	);
+	)
 }
 
 export default App

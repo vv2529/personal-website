@@ -1,6 +1,6 @@
 import Head from 'next/head'
 
-const Meta = ({ title = 'Next.js app', keywords = '', desc = '', favicon = '' }) => {
+const Meta = ({ title = 'vv2529', keywords = '', desc = '', favicon = '' }) => {
 	return (
 		<Head>
 			<title>{title}</title>
@@ -10,7 +10,7 @@ const Meta = ({ title = 'Next.js app', keywords = '', desc = '', favicon = '' })
 			{desc !== '' ? <meta name="description" content={desc} /> : ''}
 			{favicon !== '' ? <link rel="icon" href={favicon} /> : ''}
 		</Head>
-	);
-};
+	)
+}
 
 export default Meta

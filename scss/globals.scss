@@ -15,10 +15,16 @@ body {
 
 a {
 	text-decoration: none;
+	color: hsl(240, 50%, 70%);
 
 	&:hover,
 	&:focus {
 		text-decoration: underline;
+		filter: brightness(1.1);
+	}
+
+	&:active {
+		filter: brightness(1.2);
 	}
 }
 
@@ -33,4 +39,17 @@ button {
 	width: 1px;
 	height: 1px;
 	margin: -1px;
+}
+
+.no-bullets {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.align-center {
+	display: flex;
+	align-items: center;
+}
+.link-icon {
+	margin: 0 10px 0 5px;
 }
