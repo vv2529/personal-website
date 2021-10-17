@@ -1,5 +1,5 @@
-import css from '../css/PageContainer.module.css'
-import Meta from './Meta'
+import css from './style.module.scss'
+import Meta from '../Meta'
 
 const PageContainer = ({ children, title }) => {
 	return (

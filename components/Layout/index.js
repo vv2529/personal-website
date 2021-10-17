@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
-import Nav from './Nav'
-import css from '../css/Layout.module.css'
+import css from './style.module.scss'
+import Nav from '../Nav'
 
 const Layout = ({ children }) => {
 	const router = useRouter()
