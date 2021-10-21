@@ -29,15 +29,6 @@
 		padding: 0 10px;
 		text-decoration: none;
 	}
-	& a:hover,
-	& a:focus {
-		text-decoration: none;
-		outline: none;
-		filter: brightness(0.9);
-	}
-	& a:active {
-		filter: brightness(0.8);
-	}
 
 	&-li-primary a {
 		padding: 0 25px 0 15px;
@@ -45,5 +36,23 @@
 		color: #fff;
 		font-size: 19px;
 		font-weight: 600;
+	}
+
+	& a:hover,
+	& a:focus {
+		text-decoration: none;
+		outline: none;
+		color: darken($color: #bbb, $amount: 20);
+	}
+	& a:active {
+		color: darken($color: #bbb, $amount: 30);
+	}
+
+	&-li-primary a:hover,
+	&-li-primary a:focus {
+		color: darken($color: #fff, $amount: 20);
+	}
+	&-li-primary a:active {
+		color: darken($color: #fff, $amount: 30);
 	}
 }
