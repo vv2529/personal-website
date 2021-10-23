@@ -75,6 +75,18 @@
 	font-size: 12px;
 }
 
+@keyframes rainbow {
+	$n: 10;
+	@for $i from 0 through $n {
+		#{$i / $n * 100%} {
+			color: hsl($i * 360 / $n, 100%, 50%);
+		}
+	}
+}
+.name-highlight {
+	animation: rainbow 10s linear infinite;
+}
+
 @keyframes spin {
 	from {
 		transform: rotate(0deg);
