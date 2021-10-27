@@ -1,3 +1,5 @@
+import mysql from 'mysql2/promise'
+import config from '../../../config.json'
 import { useState } from 'react'
 import { FaExternalLinkAlt } from 'react-icons/fa'
 import PageContainer from '../../../components/PageContainer'
@@ -128,12 +130,12 @@ const changeCurrentStation = async (id) => {
 						? `https://youtube.com/watch?v=${song[3]}`
 						: song[3],
 				duration: song[5],
-				elapsed: song[6],
+				elapsed: song[6] || 0,
 			}
 		})
 
 		const endTime = Date.now()
-		const approxOffset = (endTime - startTime) / 2000
+		const approxOffset = Math.round((endTime - startTime) / 2000)
 		// console.log('Client:', endTime / 1000, '-', startTime / 1000, '=', approxOffset * 2)
 
 		if (songs[0]) {
@@ -161,10 +163,13 @@ const changeVolume = (newVolume) => {
 }
 
 const getStations = async () => {
-	return [
-		{ id: 1, name: 'Main' },
-		{ id: 2, name: 'Songs' },
-	]
+	let db = mysql.createPool({
+		...config.database,
+		database: 'radio',
+	})
+	const stations = (await db.execute(`SELECT id, name FROM stations WHERE createdBy=0`))[0]
+	db.end()
+	return stations
 }
 
 export async function getServerSideProps() {
