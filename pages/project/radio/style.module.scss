@@ -1,3 +1,4 @@
+@use 'sass:math';
 @import '../../../scss/_var';
 
 .page-container {
@@ -51,6 +52,10 @@
 	background: $primary-color;
 	color: #fff;
 	cursor: pointer;
+
+	&:disabled {
+		color: #888;
+	}
 }
 
 .section-caption {
@@ -78,13 +83,21 @@
 @keyframes rainbow {
 	$n: 10;
 	@for $i from 0 through $n {
-		#{$i / $n * 100%} {
-			color: hsl($i * 360 / $n, 100%, 50%);
+		#{math.div($i, $n) * 100%} {
+			color: hsl(math.div($i * 360, $n), 100%, 50%);
 		}
 	}
 }
 .name-highlight {
 	animation: rainbow 10s linear infinite;
+}
+
+.status-sign {
+	position: absolute;
+	top: 5.5em;
+	right: 0.5em;
+	width: 44px;
+	height: 44px;
 }
 
 @keyframes spin {
@@ -96,14 +109,19 @@
 	}
 }
 .loading-spinner {
-	position: absolute;
-	top: 5.5em;
-	right: 0.5em;
-	padding: 1em;
 	border: 5px solid #0b0;
 	border-right-color: transparent;
 	border-radius: 50%;
 	animation: spin 1s linear infinite;
+}
+
+.error-sign::before {
+	content: '×';
+	width: 100%;
+	height: 100%;
+	font-size: 4em;
+	line-height: 0.5em;
+	color: #d00;
 }
 
 @mixin slider-track {

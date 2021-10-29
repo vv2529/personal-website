@@ -113,6 +113,8 @@ export default async (req, res) => {
 	db = mysql.createPool({
 		...config.database,
 		database: 'radio',
+		connectionLimit: Infinity,
+		queueLimit: Infinity,
 	})
 
 	const songs = (await getSongs(station, latest)).map((song) => {
