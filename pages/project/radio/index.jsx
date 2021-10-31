@@ -1,5 +1,3 @@
-import mysql from 'mysql2/promise'
-import config from '../../../config.json'
 import { useState } from 'react'
 import { FaExternalLinkAlt } from 'react-icons/fa'
 import PageContainer from '../../../components/PageContainer'
@@ -10,7 +8,11 @@ const songInterval = 4
 const defaultSong = { id: 0, name: '—' }
 
 let setupComplete = false
+let userClicked = false
 
+let stations,
+	setStations = (value) => setStations2((stations = value)),
+	setStations2 = () => {}
 let currentStation,
 	setCurrentStation = (value) => setCurrentStation2((currentStation = value)),
 	setCurrentStation2 = () => {}
@@ -32,7 +34,7 @@ let selectForbidden,
 
 let savedSongs = {}
 let savedAudio = {}
-let timeoutID
+let timeoutID, errorTimeout
 
 const StationOptions = ({ stations }) => {
 	let official = (
@@ -52,12 +54,13 @@ const StationOptions = ({ stations }) => {
 }
 
 export default function RadioProject({ stations }) {
+	;[stations, setStations2] = useState([])
 	;[currentStation, setCurrentStation2] = useState(0)
 	;[currentSongs, setCurrentSongs2] = useState([defaultSong, defaultSong, defaultSong])
 	;[songOfTheDay, setSongOfTheDay2] = useState(defaultSong)
 	;[volume, setVolume2] = useState(1)
 	;[status, setStatus2] = useState('loading')
-	;[selectForbidden, setSelectForbidden2] = useState(false)
+	;[selectForbidden, setSelectForbidden2] = useState(true)
 
 	if (!SSR && !setupComplete) {
 		setup()
@@ -191,9 +194,7 @@ const getSongs = async (stationId, secondTry) => {
 				const obj = {
 					id: song[0],
 					name: song[1],
-					link: song[2].includes('/')
-						? song[2]
-						: `https://drive.google.com/uc?export=download&id=${song[2]}`,
+					link: song[2].includes('/') ? song[2] : `https://sharedby.blomp.com/${song[2]}`,
 					original:
 						song[4] == 'NG'
 							? `https://newgrounds.com/audio/listen/${song[3]}`
@@ -224,6 +225,7 @@ const changeCurrentStation = async (id = currentStation) => {
 		setCurrentSongs([defaultSong, defaultSong, defaultSong])
 		setSelectForbidden(true)
 		clearTimeout(timeoutID)
+		clearTimeout(errorTimeout)
 		if (id) {
 			if (!savedAudio[id]) createStationAudio(id)
 		}
@@ -243,8 +245,8 @@ const changeSongs = (id) => {
 	if (!id || id !== currentStation) return
 
 	if (new Date().getDate() !== songOfTheDay.day) changeSongOfTheDay()
-
 	setCurrentSongs([...savedSongs[id]])
+	clearTimeout(errorTimeout)
 
 	const timeout = (time) => {
 		clearTimeout(timeoutID)
@@ -254,16 +256,14 @@ const changeSongs = (id) => {
 			if (savedSongs[id].length === 3) savedSongs[id].shift()
 			changeSongs(id)
 			setTimeout(getSongs, 1000, id)
-		}, (time - inaccuracy * 0) * 1000)
+		}, time * 1000)
 	}
 
 	const audio = savedAudio[id]
-	let inaccuracy = 0
 
-	const untilNext =
-		savedSongs[id][0].startTime + savedSongs[id][0].duration + songInterval - currentTime()
+	const untilNext = savedSongs[id][1].startTime - currentTime()
 	timeout(untilNext)
-	if (untilNext >= -1 && untilNext < songInterval) {
+	if (untilNext <= songInterval + 1) {
 		setStatus('')
 		setSelectForbidden(false)
 		if (audio[audio.length - 1].src !== savedSongs[id][1].link)
@@ -277,19 +277,20 @@ const changeSongs = (id) => {
 	if (audio[1].src === savedSongs[id][0].link) {
 		audio.shift()
 		audio.push(createSingleAudio())
-	} else {
+	} else if (audio[0].src !== savedSongs[id][0].link) {
 		audio[0].src = savedSongs[id][0].link
 	}
 
 	let cb = () => {
 		audio[0].currentTime = Math.max(currentTime() - savedSongs[id][0].startTime, 0)
 		if (audio[0].currentTime < 1) audio[0].currentTime = 0
-		if (audio[0].currentTime < savedSongs[id][0].duration) audio[0].play()
 	}
 	audio[0].readyState > 0 ? cb() : (audio[0].onloadedmetadata = cb)
 
 	cb = () => {
-		audio[1].src = savedSongs[id][1].link
+		if (audio[0].currentTime < savedSongs[id][0].duration && id === currentStation && userClicked)
+			audio[0].play()
+		if (audio[1].src !== savedSongs[id][1].link) audio[1].src = savedSongs[id][1].link
 	}
 	audio[0].readyState > 3 ? cb() : (audio[0].oncanplaythrough = cb)
 
@@ -303,20 +304,33 @@ const changeSongs = (id) => {
 		// console.log('Ideal:', ideal, 'Real:', audio[0].currentTime)
 		const diff = ideal - audio[0].currentTime
 		if (diff > 1) audio[0].currentTime = ideal
-		else inaccuracy = diff
 	}
 
 	audio[0].onerror = () => {
-		if (id === currentStation) setStatus('error')
+		if (id === currentStation) {
+			setStatus('error')
+			clearTimeout(errorTimeout)
+			audio[0].pause()
+			errorTimeout = setTimeout(() => {
+				if (audio[0].readyState > 2) audio[0].play()
+			}, 1000)
+			// console.log('Error:', audio[0].currentTime)
+		}
 	}
 
 	const checkStatus = () => {
-		if (audio[0].currentTime > 1 && audio[0].readyState < 3 && status !== 'loading')
-			setStatus('loading')
-		if (audio[0].readyState > 2 && status !== '') setStatus('')
+		if (id === currentStation) {
+			if (audio[0].currentTime > 1 && audio[0].readyState < 3 && status !== 'loading')
+				setStatus('loading')
+			if (audio[0].readyState > 2 && status !== '') setStatus('')
+		}
 	}
 
 	checkStatus()
+
+	audio.onwaiting = () => {
+		checkStatus()
+	}
 
 	audio[0].ontimeupdate = () => {
 		checkStatus()
@@ -349,24 +363,23 @@ const changeVolume = (newVolume) => {
 }
 
 const getStations = async () => {
-	let db = mysql.createPool({
-		...config.database,
-		database: 'radio',
-	})
-	const stations = (await db.execute(`SELECT id, name FROM stations WHERE createdBy=0`))[0]
-	db.end()
-	return stations
+	const stations = await (await fetch('/api/radio/stations')).json()
+	return stations.map(([id, name]) => ({ id, name }))
 }
 
-export async function getServerSideProps() {
-	return {
-		props: {
-			stations: await getStations(),
-		},
-	}
+const changeStations = async () => {
+	const stations = await getStations()
+	setStations(stations)
+	setSelectForbidden(false)
 }
 
 const setup = () => {
+	changeStations()
 	changeSongOfTheDay()
 	changeVolume(+localStorage.radio_volume)
+	const click = () => {
+		userClicked = true
+		window.removeEventListener('click', click)
+	}
+	window.addEventListener('click', click)
 }
