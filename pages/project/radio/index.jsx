@@ -32,8 +32,8 @@ let selectForbidden,
 	setSelectForbidden = (value) => setSelectForbidden2((selectForbidden = value)),
 	setSelectForbidden2 = () => {}
 
-let savedSongs = {}
-let savedAudio = {}
+const savedSongs = {}
+let audio
 let timeoutID, errorTimeout
 
 const StationOptions = ({ stations }) => {
@@ -159,10 +159,6 @@ const createSingleAudio = () => {
 	return audio
 }
 
-const createStationAudio = (id) => {
-	savedAudio[id] = [createSingleAudio(), createSingleAudio()]
-}
-
 const getSongs = async (stationId, secondTry) => {
 	let songs = savedSongs[stationId] || []
 	const startTime = Date.now()
@@ -218,7 +214,7 @@ const getSongs = async (stationId, secondTry) => {
 }
 
 const changeCurrentStation = async (id = currentStation) => {
-	if (savedAudio[currentStation]) savedAudio[currentStation][0].pause()
+	audio.pause()
 	if (id !== currentStation) {
 		setStatus('')
 		setCurrentStation(id)
@@ -226,9 +222,6 @@ const changeCurrentStation = async (id = currentStation) => {
 		setSelectForbidden(true)
 		clearTimeout(timeoutID)
 		clearTimeout(errorTimeout)
-		if (id) {
-			if (!savedAudio[id]) createStationAudio(id)
-		}
 	}
 
 	const songs = await getSongs(id)
@@ -247,6 +240,7 @@ const changeSongs = (id) => {
 	if (new Date().getDate() !== songOfTheDay.day) changeSongOfTheDay()
 	setCurrentSongs([...savedSongs[id]])
 	clearTimeout(errorTimeout)
+	audio.pause()
 
 	const timeout = (time) => {
 		clearTimeout(timeoutID)
@@ -259,85 +253,65 @@ const changeSongs = (id) => {
 		}, time * 1000)
 	}
 
-	const audio = savedAudio[id]
-
 	const untilNext = savedSongs[id][1].startTime - currentTime()
 	timeout(untilNext)
 	if (untilNext <= songInterval + 1) {
 		setStatus('')
 		setSelectForbidden(false)
-		if (audio[audio.length - 1].src !== savedSongs[id][1].link)
-			audio[audio.length - 1].src = savedSongs[id][1].link
+		if (audio.src !== savedSongs[id][1].link) audio.src = savedSongs[id][1].link
 		return
 	}
-
-	if (!audio[1]) {
-		audio.unshift(createSingleAudio())
-	}
-	if (audio[1].src === savedSongs[id][0].link) {
-		audio.shift()
-		audio.push(createSingleAudio())
-	} else if (audio[0].src !== savedSongs[id][0].link) {
-		audio[0].src = savedSongs[id][0].link
+	if (audio.src !== savedSongs[id][0].link) {
+		audio.src = savedSongs[id][0].link
 	}
 
 	let cb = () => {
-		audio[0].currentTime = Math.max(currentTime() - savedSongs[id][0].startTime, 0)
-		if (audio[0].currentTime < 1) audio[0].currentTime = 0
+		audio.currentTime = Math.max(currentTime() - savedSongs[id][0].startTime, 0)
+		if (audio.currentTime < 1) audio.currentTime = 0
 	}
-	audio[0].readyState > 0 ? cb() : (audio[0].onloadedmetadata = cb)
+	audio.readyState > 0 ? cb() : (audio.onloadedmetadata = cb)
 
 	cb = () => {
-		if (audio[0].currentTime < savedSongs[id][0].duration && id === currentStation && userClicked)
-			audio[0].play()
-		if (audio[1].src !== savedSongs[id][1].link) audio[1].src = savedSongs[id][1].link
+		if (audio.currentTime < savedSongs[id][0].duration && id === currentStation && userClicked)
+			audio.play()
 	}
-	audio[0].readyState > 3 ? cb() : (audio[0].oncanplaythrough = cb)
+	audio.readyState > 2 ? cb() : (audio.oncanplay = cb)
 
-	audio[0].onplaying = () => {
-		setStatus('')
-		if (audio[0].currentTime >= savedSongs[id][0].duration) {
-			audio[0].pause()
+	audio.onplaying = () => {
+		if (audio.currentTime >= savedSongs[id][0].duration) {
+			audio.pause()
 			return
 		}
 		const ideal = currentTime() - savedSongs[id][0].startTime
-		// console.log('Ideal:', ideal, 'Real:', audio[0].currentTime)
-		const diff = ideal - audio[0].currentTime
-		if (diff > 1) audio[0].currentTime = ideal
+		// console.log('Ideal:', ideal, 'Real:', audio.currentTime)
+		const diff = ideal - audio.currentTime
+		if (diff > 1) audio.currentTime = ideal
 	}
 
-	audio[0].onerror = () => {
+	audio.onerror = () => {
 		if (id === currentStation) {
 			setStatus('error')
-			clearTimeout(errorTimeout)
-			audio[0].pause()
-			errorTimeout = setTimeout(() => {
-				if (audio[0].readyState > 2) audio[0].play()
-			}, 1000)
-			// console.log('Error:', audio[0].currentTime)
+			// console.log('Error:', audio.currentTime, audio)
+			audio.src += ''
 		}
 	}
 
 	const checkStatus = () => {
 		if (id === currentStation) {
-			if (audio[0].currentTime > 1 && audio[0].readyState < 3 && status !== 'loading')
+			if (audio.currentTime > 1 && audio.readyState < 3 && status !== 'loading')
 				setStatus('loading')
-			if (audio[0].readyState > 2 && status !== '') setStatus('')
+			if (audio.readyState > 2 && status !== '') setStatus('')
 		}
 	}
 
 	checkStatus()
 
-	audio.onwaiting = () => {
+	audio.ontimeupdate = () => {
 		checkStatus()
-	}
-
-	audio[0].ontimeupdate = () => {
-		checkStatus()
-
-		const diff = audio[0].currentTime - savedSongs[id][0].duration
+		const diff = audio.currentTime - savedSongs[id][0].duration
 		if (diff >= 0) {
-			audio[0].pause()
+			audio.pause()
+			if (audio.src !== savedSongs[id][1].link) audio.src = savedSongs[id][1].link
 		}
 	}
 }
@@ -354,11 +328,7 @@ const changeSongOfTheDay = async () => {
 
 const changeVolume = (newVolume) => {
 	localStorage.radio_volume = newVolume
-	Object.values(savedAudio).forEach((audio) => {
-		for (let i = 0; i < 2; i++) {
-			audio[i].volume = newVolume
-		}
-	})
+	audio.volume = newVolume
 	setVolume(newVolume)
 }
 
@@ -374,6 +344,7 @@ const changeStations = async () => {
 }
 
 const setup = () => {
+	audio = createSingleAudio()
 	changeStations()
 	changeSongOfTheDay()
 	changeVolume(+localStorage.radio_volume)
