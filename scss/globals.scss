@@ -1,4 +1,5 @@
 @import '../node_modules/normalize-scss/sass/_normalize';
+@import './_var';
 @include normalize();
 
 * {
@@ -29,8 +30,7 @@ a {
 	}
 }
 
-a,
-button {
+a {
 	cursor: pointer;
 }
 
@@ -56,4 +56,168 @@ button {
 }
 .link-icon {
 	margin: 0 10px 0 5px;
+}
+
+@mixin slider-track {
+	width: 100%;
+	height: 1em;
+	border: 1px solid #888;
+	border-radius: 0.5em;
+	box-shadow: 0px 0px 5px #444;
+	background: $primary-dark-1;
+	cursor: pointer;
+}
+@mixin slider-thumb {
+	width: 2em;
+	height: 2em;
+	margin-top: -0.5em;
+	border: 1px solid #888;
+	border-radius: 0.5em;
+	box-shadow: 0px 0px 5px #444;
+	background: $primary-dark-2;
+	cursor: pointer;
+}
+@mixin slider-thumb-focus {
+	box-shadow: 0px 0px 5px lighten($color: #444, $amount: 20);
+}
+@mixin slider-thumb-active {
+	box-shadow: 0px 0px 5px lighten($color: #444, $amount: 50);
+}
+
+input[type='range'] {
+	-webkit-appearance: none;
+	width: 12em;
+	height: 3em;
+	padding: 0;
+	background: none;
+
+	&:focus {
+		outline: none;
+	}
+
+	&::-webkit-slider-runnable-track {
+		@include slider-track;
+	}
+	&::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		@include slider-thumb;
+	}
+
+	&::-moz-range-track {
+		@include slider-track;
+	}
+	&::-moz-range-thumb {
+		@include slider-thumb;
+	}
+
+	&::-ms-track {
+		background: transparent;
+		border-color: transparent;
+		color: transparent;
+	}
+	&::-ms-tooltip {
+		display: none;
+	}
+	&::-ms-fill-lower {
+		@include slider-track;
+	}
+	&::-ms-fill-upper {
+		@include slider-track;
+	}
+	&::-ms-thumb {
+		@include slider-thumb;
+		margin-top: -0.25em;
+	}
+
+	&:hover::-moz-range-thumb,
+	&:focus::-moz-range-thumb {
+		@include slider-thumb-focus;
+	}
+	&:hover::-webkit-slider-thumb,
+	&:focus::-webkit-slider-thumb {
+		@include slider-thumb-focus;
+	}
+	&:hover::-ms-thumb,
+	&:focus::-ms-thumb {
+		@include slider-thumb-focus;
+	}
+
+	&:active::-moz-range-thumb {
+		@include slider-thumb-active;
+	}
+	&:active::-webkit-slider-thumb {
+		@include slider-thumb-active;
+	}
+	&:active::-ms-thumb {
+		@include slider-thumb-active;
+	}
+}
+
+button {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	border: none;
+	background: none;
+	color: #fff;
+	font-size: 1.25em;
+	cursor: pointer;
+
+	&:hover,
+	&:focus {
+		color: darken($color: #fff, $amount: 20);
+	}
+	&:active {
+		color: darken($color: #fff, $amount: 30);
+	}
+}
+
+fieldset {
+	border-color: #bbb;
+}
+
+input[type='text'],
+input[type='password'],
+input[type='search'],
+input[type='number'] {
+	all: unset;
+	box-sizing: border-box;
+}
+input[type='text'],
+input[type='password'],
+input[type='search'],
+input[type='number'],
+select {
+	padding: 0.25em;
+	border: none;
+	border-bottom: 1px solid darken($color: #fff, $amount: 30);
+	cursor: pointer;
+
+	&:hover {
+		border-color: darken($color: #fff, $amount: 20);
+	}
+	&:focus {
+		border-color: #fff;
+	}
+	&:disabled {
+		color: #888;
+	}
+}
+
+select {
+	background: $primary-color;
+	color: #fff;
+}
+
+input[type='number'] {
+	width: 2em;
+	padding: 0 0.25em;
+	text-align: center;
+	-moz-appearance: textfield;
+
+	&::-webkit-outer-spin-button,
+	&::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
 }

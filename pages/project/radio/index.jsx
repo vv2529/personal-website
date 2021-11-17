@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { FaExternalLinkAlt } from 'react-icons/fa'
-import PageContainer from '../../../components/PageContainer'
+import { ResponsiveFramework, PageTitle } from '../../../components/ResponsiveFramework'
 import css from './style.module.scss'
 
 const SSR = !('window' in globalThis)
@@ -53,7 +53,7 @@ const StationOptions = ({ stations }) => {
 	return signedIn ? <optgroup label="Official stations">{official}</optgroup> : <>{official}</>
 }
 
-export default function RadioProject({ stations }) {
+export default function RadioProject() {
 	;[stations, setStations2] = useState([])
 	;[currentStation, setCurrentStation2] = useState(0)
 	;[currentSongs, setCurrentSongs2] = useState([defaultSong, defaultSong, defaultSong])
@@ -68,83 +68,68 @@ export default function RadioProject({ stations }) {
 	}
 
 	return (
-		<PageContainer title="Radio" className={css['page-container']}>
-			<div className={css['inner-container']}>
-				<div className={css['main-block']}>
-					<h1 className={css['main-title']}>Radio</h1>
-					<div className={css['main-section']}>
-						<div className={css['section-caption']}>Select station:</div>
-						<select
-							className={css['station-select']}
-							disabled={selectForbidden}
-							value={currentStation}
-							onChange={(e) =>
-								changeCurrentStation(+e.target.children[e.target.selectedIndex].value)
-							}
+		<ResponsiveFramework title="Radio" status={status}>
+			<div className={css['main-block']}>
+				<PageTitle title="Radio" />
+				<div className={css['main-section']}>
+					<div className={css['section-caption']}>Select station:</div>
+					<select
+						className={css['station-select']}
+						disabled={selectForbidden}
+						value={currentStation}
+						onChange={(e) => changeCurrentStation(+e.target.children[e.target.selectedIndex].value)}
+					>
+						<StationOptions stations={stations} />
+					</select>
+				</div>
+				<div className={css['main-section']}>
+					<div className={css['section-caption']}>Now playing:</div>
+					<div className={css['section-content']}>
+						<div className={css['section-name']}>{currentSongs[0].name}</div>
+						<div className={css['section-extra']}>
+							{currentSongs[0].original ? (
+								<a href={currentSongs[0].original} target="_blank">
+									Original <FaExternalLinkAlt className={css['section-extra-icon']} />
+								</a>
+							) : (
+								''
+							)}
+						</div>
+					</div>
+				</div>
+				<div className={css['main-section']}>
+					<div className={css['section-caption']}>Next:</div>
+					<div className={css['section-content']}>
+						<div className={css['section-name']}>{currentSongs[1].name}</div>
+					</div>
+				</div>
+				<div className={css['main-section']}>
+					<div className={css['section-caption']}>Song of the day:</div>
+					<div className={css['section-content']}>
+						<div
+							className={`${css['section-name']} ${
+								isSongOfTheDayPlaying() ? css['name-highlight'] : ''
+							}`}
 						>
-							<StationOptions stations={stations} />
-						</select>
-					</div>
-					<div className={css['main-section']}>
-						<div className={css['section-caption']}>Now playing:</div>
-						<div className={css['section-content']}>
-							<div className={css['section-name']}>{currentSongs[0].name}</div>
-							<div className={css['section-extra']}>
-								{currentSongs[0].original ? (
-									<a href={currentSongs[0].original} target="_blank">
-										Original <FaExternalLinkAlt className={css['section-extra-icon']} />
-									</a>
-								) : (
-									''
-								)}
-							</div>
-						</div>
-					</div>
-					<div className={css['main-section']}>
-						<div className={css['section-caption']}>Next:</div>
-						<div className={css['section-content']}>
-							<div className={css['section-name']}>{currentSongs[1].name}</div>
-						</div>
-					</div>
-					<div className={css['main-section']}>
-						<div className={css['section-caption']}>Song of the day:</div>
-						<div className={css['section-content']}>
-							<div
-								className={`${css['section-name']} ${
-									isSongOfTheDayPlaying() ? css['name-highlight'] : ''
-								}`}
-							>
-								{songOfTheDay.name}
-							</div>
+							{songOfTheDay.name}
 						</div>
 					</div>
 				</div>
-				<div className={css['options-block']}>
-					<div className={css['main-section']}>
-						<div>Volume: {Math.floor(volume * 100)}%</div>
-						<input
-							className={css['slider']}
-							type="range"
-							min="0"
-							max="1"
-							step="any"
-							value={volume}
-							onChange={(e) => changeVolume(e.target.value)}
-						/>
-					</div>
-				</div>
-				<div
-					className={`${css['status-sign']} ${css['loading-spinner']} ${
-						status === 'loading' ? '' : 'hidden'
-					}`}
-				></div>
-				<div
-					className={`${css['status-sign']} ${css['error-sign']} ${
-						status === 'error' ? '' : 'hidden'
-					}`}
-				></div>
 			</div>
-		</PageContainer>
+			<div className={css['options-block']}>
+				<div className={css['main-section']}>
+					<div>Volume: {Math.floor(volume * 100)}%</div>
+					<input
+						type="range"
+						min="0"
+						max="1"
+						step="0.01"
+						value={volume}
+						onChange={(e) => changeVolume(e.target.value)}
+					/>
+				</div>
+			</div>
+		</ResponsiveFramework>
 	)
 }
 
