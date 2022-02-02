@@ -44,6 +44,9 @@ a {
 .hidden {
 	display: none;
 }
+.transparent {
+	opacity: 0;
+}
 
 .no-bullets {
 	list-style: none;
@@ -170,6 +173,10 @@ button {
 	&:active {
 		color: darken($color: #fff, $amount: 30);
 	}
+	&:disabled {
+		color: darken($color: #fff, $amount: 50);
+		cursor: no-drop;
+	}
 }
 
 fieldset {
@@ -191,7 +198,6 @@ select {
 	padding: 0.25em;
 	border: none;
 	border-bottom: 1px solid darken($color: #fff, $amount: 30);
-	cursor: pointer;
 
 	&:hover {
 		border-color: darken($color: #fff, $amount: 20);
@@ -207,6 +213,7 @@ select {
 select {
 	background: $primary-color;
 	color: #fff;
+	cursor: pointer;
 }
 
 input[type='number'] {

@@ -35,4 +35,4 @@ yarn-error.log*
 
 # extra
 config.json
-/scripts
+/misc

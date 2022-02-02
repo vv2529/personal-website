@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { FaExternalLinkAlt } from 'react-icons/fa'
 import { ResponsiveFramework, PageTitle } from '../../../components/ResponsiveFramework'
 import css from './style.module.scss'
+import { transformSong } from '../../../scripts/music'
 
 const SSR = !('window' in globalThis)
 const songInterval = 4
@@ -172,19 +173,8 @@ const getSongs = async (stationId, secondTry) => {
 			songs = response.map((song) => {
 				const elapsed = song[6] || 0
 				time -= elapsed
-				const obj = {
-					id: song[0],
-					name: song[1],
-					link: song[2].includes('/') ? song[2] : `https://sharedby.blomp.com/${song[2]}`,
-					original:
-						song[4] == 'NG'
-							? `https://newgrounds.com/audio/listen/${song[3]}`
-							: song[4] == 'YT'
-							? `https://youtube.com/watch?v=${song[3]}`
-							: song[3],
-					duration: song[5],
-					startTime: time,
-				}
+				const obj = transformSong(song)
+				obj.startTime = time
 				time += obj.duration + songInterval
 				return obj
 			})
