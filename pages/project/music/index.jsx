@@ -91,6 +91,7 @@ const songsPerPage = 50
 let audio = {}
 let isSeeking = false
 let justLoaded = true
+let hadError = false
 
 let status,
 	setStatus = (value) => setStatus2((status = value)),
@@ -235,6 +236,8 @@ const SongControls = () => {
 	const duration = isFinite(audio?.duration)
 		? Math.max(audio?.duration, songPlaying.duration)
 		: songPlaying.duration
+	const volumeText = `Volume: ${Math.round(volume * 100)}%`
+	const speedText = `Speed: x${Math.round(speed * 100) / 100}`
 
 	return (
 		<div className={css['song-controls']}>
@@ -249,7 +252,9 @@ const SongControls = () => {
 					'--bg-break': `${(100 * currentTime) / duration}%`,
 				}}
 			>
-				<div className={css['song-timeline-caption']}>{songPlaying.name}</div>
+				<div className={css['song-timeline-caption']} title={songPlaying.name}>
+					{songPlaying.name}
+				</div>
 				<input
 					className={css['song-timeline-slider']}
 					type="range"
@@ -274,7 +279,9 @@ const SongControls = () => {
 				<div>{numberToTime(duration)}</div>
 			</div>
 			<div className={css['song-volume']}>
-				<div className={css['song-volume-caption']}>Volume: {Math.floor(volume * 100)}%</div>
+				<div className={css['song-volume-caption']} title={volumeText}>
+					{volumeText}
+				</div>
 				<input
 					className={css['song-volume-slider']}
 					type="range"
@@ -287,7 +294,9 @@ const SongControls = () => {
 			</div>
 			{options.showSpeedSlider ? (
 				<div className={css['song-speed']}>
-					<div className={css['song-speed-caption']}>Speed: x{Math.floor(speed * 100) / 100}</div>
+					<div className={css['song-speed-caption']} title={speedText}>
+						{speedText}
+					</div>
 					<input
 						className={css['song-speed-slider']}
 						type="range"
@@ -674,12 +683,19 @@ const createAudio = () => {
 		}
 		setStatus('')
 	}
+
 	audio.onwaiting = () => {
 		setStatus('loading')
 	}
+
 	audio.onerror = (e) => {
 		setStatus('error')
-		audio.pause()
+		if (hadError) {
+			audio.pause()
+		} else {
+			hadError = true
+			audio.src += ''
+		}
 	}
 	audio.onplaying = () => {
 		if (songPlaying.paused) setSongPlaying({ ...songPlaying, paused: false })
@@ -713,6 +729,7 @@ const changeSongPlaying = (song) => {
 	setCurrentTime(0)
 	setStatus('loading')
 	justLoaded = true
+	hadError = false
 	audio.currentTime = 0
 	audio.src = song.link
 }
@@ -838,7 +855,6 @@ const setup = () => {
 
 		window.onkeydown = (e) => {
 			if (!songPlaying.id || tab !== 0 || ['search', 'text'].includes(e.target.type)) return
-			e.preventDefault()
 
 			if (e.key === ' ') {
 				playPause()
@@ -860,7 +876,11 @@ const setup = () => {
 				} else {
 					changeVolume(volume + 0.1)
 				}
+			} else {
+				return
 			}
+
+			e.preventDefault()
 		}
 	}
 
