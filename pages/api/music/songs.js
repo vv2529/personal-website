@@ -18,18 +18,21 @@ export default async (req, res) => {
 
 	db.end()
 
-	res
-		.status(200)
-		.json(
-			songs.map((s) => [
+	res.status(200).json(
+		songs.map((s) => {
+			let a = [
 				s.id,
 				s.name,
 				s.linkId,
 				s.originalId,
 				s.originalSource,
 				s.duration,
+				s.isSong || 0,
 				s.isHard,
-				s.isSong,
-			])
-		)
+			]
+			if (!a[a.length - 1]) a.pop()
+			if (!a[a.length - 1]) a.pop()
+			return a
+		})
+	)
 }

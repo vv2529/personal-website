@@ -13,7 +13,7 @@ export const transformSong = (song) => {
 				? `https://youtube.com/watch?v=${song[3]}`
 				: song[3],
 		duration: song[5],
-		isHard: song[6],
-		isSong: song[7],
+		isSong: song[6],
+		isHard: song[7],
 	}
 }

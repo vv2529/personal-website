@@ -118,8 +118,8 @@ export default async (req, res) => {
 	})
 
 	const songs = (await getSongs(station, latest)).map((song) => {
-		delete song.isHard
 		delete song.isSong
+		delete song.isHard
 		delete song.addedBy
 		return Object.values(song)
 	})
