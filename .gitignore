@@ -37,3 +37,4 @@ yarn-error.log*
 config.json
 /misc
 /bash.exe.stackdump
+/sh.exe.stackdump
