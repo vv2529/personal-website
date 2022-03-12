@@ -19,7 +19,8 @@ const radioContext = createContext(
 			userClicked: false,
 			audio: {},
 			timeoutID: 0,
-			errorTimeout: 0,
+			waitingTimeout: 0,
+			startedPreloading: false,
 		},
 		consts: {
 			SSR: !('window' in globalThis),

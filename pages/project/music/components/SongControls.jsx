@@ -70,7 +70,7 @@ const SongControls = () => {
 	return (
 		<div className={css['song-controls']}>
 			<div className={css['song-play-control']}>
-				<button className={css['rounded-button']} onClick={music.playPause}>
+				<button className={css['rounded-button']} onClick={() => music.playPause()}>
 					{music.songPlaying.paused ? <FaPlay /> : <FaPause />}
 				</button>
 			</div>

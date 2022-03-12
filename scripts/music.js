@@ -3,7 +3,9 @@ export const transformSong = (song) => {
 		id: song[0],
 		name: song[1],
 		linkId: song[2],
-		link: song[2].includes('/') ? song[2] : `https://sharedby.blomp.com/${song[2]}`,
+		link: song[2].includes('/')
+			? song[2]
+			: `https://drive.google.com/uc?export=download&id=${song[2]}`,
 		originalId: song[3],
 		originalSource: song[4],
 		original:
@@ -16,4 +18,55 @@ export const transformSong = (song) => {
 		isSong: song[6],
 		isHard: song[7],
 	}
+}
+
+export const getPreloadedAudio = async (src, startTime = 0) => {
+	const audio = new Audio()
+	audio.preload = true
+	audio.muted = true
+	audio.currentTime = startTime
+	audio.src = src
+
+	audio.play().catch(() => {})
+
+	const timeupdate = () => {
+		const edge = audio.buffered.end(audio.buffered.length - 1)
+		if (edge - audio.currentTime > 1) {
+			audio.currentTime = edge
+		}
+
+		// console.log(audio.currentTime, '/', edge)
+	}
+
+	audio.addEventListener('timeupdate', timeupdate)
+
+	return new Promise((resolve, reject) => {
+		const removeAll = () => {
+			audio.removeEventListener('timeupdate', timeupdate)
+			audio.removeEventListener('ended', ended)
+			audio.removeEventListener('error', error)
+			audio.removeEventListener('abort', removeAll)
+		}
+
+		const abort = (e) => {
+			e.preventDefault()
+			removeAll()
+			reject('Audio preloading aborted')
+		}
+
+		const ended = () => {
+			removeAll()
+			resolve(audio)
+		}
+
+		const error = (e) => {
+			e.preventDefault()
+			removeAll()
+			reject(e)
+		}
+
+		audio.addEventListener('ended', ended)
+		audio.addEventListener('error', error)
+		audio.addEventListener('abort', abort)
+	})
 }

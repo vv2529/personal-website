@@ -1,5 +1,5 @@
 import Model from '../../../scripts/Model'
-import { transformSong } from '../../../scripts/music'
+import { transformSong, getPreloadedAudio } from '../../../scripts/music'
 import css from './style.module.scss'
 
 export default class MusicModel extends Model {
@@ -29,16 +29,22 @@ export default class MusicModel extends Model {
 		this.audio.oncanplay = () => {
 			if (this.justLoaded) {
 				this.justLoaded = false
-				this.audio.play()
+				this.audio.play().catch(() => {})
 			}
+			clearTimeout(this.waitingTimeout)
 			this.status = ''
 		}
 
 		this.audio.onwaiting = () => {
-			this.status = 'loading'
+			clearTimeout(this.waitingTimeout)
+			this.waitingTimeout = setTimeout(() => {
+				this.status = 'loading'
+			}, 250)
 		}
 
 		this.audio.onerror = (e) => {
+			e.preventDefault()
+			clearTimeout(this.waitingTimeout)
 			this.status = 'error'
 			if (this.hadError) {
 				this.audio.pause()
@@ -47,7 +53,11 @@ export default class MusicModel extends Model {
 				this.audio.src += ''
 			}
 		}
+		this.audio.onabort = (e) => {
+			e.preventDefault()
+		}
 		this.audio.onplaying = () => {
+			clearTimeout(this.waitingTimeout)
 			if (this.songPlaying.paused) this.songPlaying = { ...this.songPlaying, paused: false }
 		}
 		this.audio.onpause = () => {
@@ -75,13 +85,18 @@ export default class MusicModel extends Model {
 
 	changeSongPlaying(song) {
 		if (this.songPlaying.id === song.id) return false
+		clearTimeout(this.waitingTimeout)
+		this.status = ''
+		this.waitingTimeout = setTimeout(() => {
+			this.status = 'loading'
+		}, 250)
 		this.songPlaying = { ...song, paused: true }
 		this.currentTime = 0
-		this.status = 'loading'
 		this.justLoaded = true
 		this.hadError = false
 		this.audio.currentTime = 0
 		this.audio.src = song.link
+		getPreloadedAudio(song.link)
 	}
 
 	playCustomURL() {
@@ -95,7 +110,7 @@ export default class MusicModel extends Model {
 	}
 
 	playPause() {
-		if (!this.audio.error && this.audio.paused) this.audio.play()
+		if (!this.audio.error && this.audio.paused) this.audio.play().catch(() => {})
 		else this.audio.pause()
 	}
 

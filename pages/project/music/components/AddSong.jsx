@@ -12,14 +12,13 @@ const AddSong = () => {
 				<div className={css['inline-group']}>
 					<div>Select file source:</div>
 					<select className={css['stretch']}>
-						<option>Blomp</option>
 						<option>Google Drive</option>
 						<option>Other</option>
 					</select>
 				</div>
 				<input
 					type="text"
-					placeholder={true ? 'ID on Blomp' : true ? 'ID on Google Drive' : 'Full link'}
+					placeholder={true ? 'ID on Google Drive' : 'Full link'}
 					className={css['single-stretch']}
 				/>
 			</fieldset>
@@ -28,8 +27,8 @@ const AddSong = () => {
 				<div className={css['inline-group']}>
 					<div>Select source:</div>
 					<select className={css['stretch']}>
-						<option>Newgrounds</option>
 						<option>Youtube</option>
+						<option>Newgrounds</option>
 						<option>Other</option>
 					</select>
 				</div>

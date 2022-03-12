@@ -45,6 +45,7 @@ const musicContext = createContext(
 			isSeeking: false,
 			justLoaded: true,
 			hadError: false,
+			waitingTimeout: 0,
 		},
 		consts: {
 			SSR: !('window' in globalThis),
