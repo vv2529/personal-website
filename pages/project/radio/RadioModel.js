@@ -111,13 +111,15 @@ export default class RadioModel extends Model {
 				time2 = Math.min(time, 4)
 
 			this.timeoutID = setTimeout(() => {
-				this.audio.pause()
-				if (this.audio.src !== this.savedSongs[id][1].link)
-					this.audio.src = this.savedSongs[id][1].link
-
 				playingIndex = 1
-				preload()
-				this.startedPreloading = true
+				setNextSrc()
+
+				try {
+					preload()
+					this.startedPreloading = true
+				} catch (e) {
+					console.log('Preloading failed.')
+				}
 
 				this.timeoutID = setTimeout(() => {
 					if (id !== this.currentStation) return
@@ -129,18 +131,33 @@ export default class RadioModel extends Model {
 		}
 
 		const untilNext = this.savedSongs[id][1].startTime - this.currentTime()
-		timeout(untilNext)
+		timeout.call(this, untilNext)
+
 		let playingIndex = 0
+
 		// If we happen to catch the song at the last second, we don't bother playing it
 		if (untilNext <= this.songInterval + 1) {
 			this.status = ''
 			this.selectForbidden = false
 			playingIndex = 1
-			return
 		}
-		if (this.audio.src !== this.savedSongs[id][playingIndex].link) {
+
+		const setNextSrc = () => {
 			this.audio.pause()
-			this.audio.src = this.savedSongs[id][playingIndex].link
+			if (this.audio.src !== this.savedSongs[id][playingIndex].link) {
+				this.audio.onerror =
+					this.audio.onwaiting =
+					this.audio.onplaying =
+					this.audio.onabort =
+					this.audio.ontimeupdate =
+						null
+				if (this.savedSongs[id][playingIndex].preloadedAudio) {
+					this.audio.src += ''
+					this.audio = this.savedSongs[id][playingIndex].preloadedAudio
+					this.audio.muted = false
+					this.audio.volume = this.volume
+				} else this.audio.src = this.savedSongs[id][playingIndex].link
+			}
 		}
 
 		const preload = () => {
@@ -154,8 +171,8 @@ export default class RadioModel extends Model {
 				// console.log('Preloading:', songs[1].name)
 				if (!songs[1].preloaded)
 					getPreloadedAudio(songs[1].link, Math.max(this.currentTime() - songs[1].startTime, 0))
-						.then(() => {
-							songs[1].preloaded = true
+						.then((preloadedAudio) => {
+							songs[1].preloaded = preloadedAudio
 						})
 						.catch(onError)
 			}
@@ -166,21 +183,21 @@ export default class RadioModel extends Model {
 			songs[0].preloaded
 				? preloadNext()
 				: getPreloadedAudio(songs[0].link, Math.max(this.currentTime() - songs[0].startTime, 0))
-						.then(() => {
-							songs[0].preloaded = true
+						.then((preloadedAudio) => {
+							songs[0].preloaded = preloadedAudio
 							preloadNext()
 						})
 						.catch(onError)
 		}
 
+		setNextSrc()
 		preload()
 		this.startedPreloading = false
 
-		let cb = () => {
-			this.audio.currentTime = Math.max(this.currentTime() - this.savedSongs[id][0].startTime, 0)
-			if (this.audio.currentTime < 1) this.audio.currentTime = 0
-		}
-		this.audio.readyState > 0 ? cb() : (this.audio.onloadedmetadata = cb)
+		if (playingIndex === 1) return
+
+		this.audio.currentTime = Math.max(this.currentTime() - this.savedSongs[id][0].startTime, 0)
+		if (this.audio.currentTime < 1) this.audio.currentTime = 0
 
 		if (
 			this.audio.currentTime < this.savedSongs[id][0].duration &&
@@ -188,17 +205,6 @@ export default class RadioModel extends Model {
 			this.userClicked
 		)
 			this.audio.play().catch(() => {})
-
-		this.audio.onplaying = () => {
-			if (this.audio.currentTime >= this.savedSongs[id][0].duration) {
-				this.audio.pause()
-				return
-			}
-			const ideal = this.currentTime() - this.savedSongs[id][0].startTime
-			// console.log('Ideal:', ideal, 'Real:', this.audio.currentTime)
-			const diff = ideal - this.audio.currentTime
-			if (diff > 1) this.audio.currentTime = ideal
-		}
 
 		const maxErrorCount = 2
 		let errorCount = 0
@@ -229,11 +235,17 @@ export default class RadioModel extends Model {
 		}
 
 		this.audio.ontimeupdate = () => {
-			const diff = this.audio.currentTime - this.savedSongs[id][0].duration
+			let diff = this.audio.currentTime - this.savedSongs[id][0].duration
 			if (diff >= 0) {
-				this.audio.pause()
-				if (this.audio.src !== this.savedSongs[id][1].link)
-					this.audio.src = this.savedSongs[id][1].link
+				playingIndex = 1
+				setNextSrc()
+				return
+			}
+
+			const ideal = this.currentTime() - this.savedSongs[id][0].startTime
+			diff = ideal - this.audio.currentTime
+			if (diff > 1) {
+				this.audio.currentTime = ideal
 			}
 		}
 	}
