@@ -1,6 +1,6 @@
 import Head from 'next/head'
 
-const Meta = ({ title = 'vv2529', keywords = '', desc = '', favicon = '' }) => {
+const Meta = ({ title = 'vv2529', keywords = '', desc = '', favicon = '/images/logo.png' }) => {
 	return (
 		<Head>
 			<title>{title}</title>

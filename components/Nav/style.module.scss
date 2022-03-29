@@ -1,6 +1,7 @@
 @import '../../scss/_var';
 
 .nav {
+	display: flex;
 	min-height: 50px;
 	max-height: 50px;
 	background: $primary-dark-1;
@@ -13,46 +14,53 @@
 
 	&-ul {
 		@include full-height-align-center;
+		flex-grow: 1;
 		padding: 0;
 		margin: 0;
 		list-style: none;
+	}
+
+	&-button {
+		padding: 0 20px;
+		border-left: 1px solid #808080;
+		font-size: 1rem;
 	}
 
 	&-li {
 		@include full-height-align-center;
 	}
 
-	& a {
+	&-link {
 		@include full-height-align-center;
 		color: #bbb;
 		background: $primary-dark-1;
-		padding: 0 10px;
+		padding: 0 20px;
 		text-decoration: none;
-	}
 
-	&-li-primary a {
-		padding: 0 25px 0 15px;
-		background: $primary-dark-2;
-		color: #fff;
-		font-size: 19px;
-		font-weight: 600;
-	}
+		&:hover,
+		&:focus {
+			text-decoration: none;
+			outline: none;
+			color: darken($color: #bbb, $amount: 20);
+		}
+		&:active {
+			color: darken($color: #bbb, $amount: 30);
+		}
 
-	& a:hover,
-	& a:focus {
-		text-decoration: none;
-		outline: none;
-		color: darken($color: #bbb, $amount: 20);
-	}
-	& a:active {
-		color: darken($color: #bbb, $amount: 30);
-	}
+		&-primary {
+			padding: 0 30px 0 20px;
+			background: $primary-dark-2;
+			color: #fff;
+			font-size: 19px;
+			font-weight: 600;
 
-	&-li-primary a:hover,
-	&-li-primary a:focus {
-		color: darken($color: #fff, $amount: 20);
-	}
-	&-li-primary a:active {
-		color: darken($color: #fff, $amount: 30);
+			&:hover,
+			&:focus {
+				color: darken($color: #fff, $amount: 20);
+			}
+			&:active {
+				color: darken($color: #fff, $amount: 30);
+			}
+		}
 	}
 }
