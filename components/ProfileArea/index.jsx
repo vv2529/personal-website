@@ -29,7 +29,9 @@ const LoggedInArea = ({ setNameChangeOpen }) => {
 				<button className={css['profile-btn']} onClick={() => setNameChangeOpen(true)}>
 					Change name
 				</button>
-				<button className={css['profile-btn']}>Log out</button>
+				<button className={css['profile-btn']} onClick={() => signOut()}>
+					Log out
+				</button>
 			</div>
 		</>
 	)
@@ -39,7 +41,9 @@ const LoggedOutArea = ({ setProfileAreaOpen }) => {
 	return (
 		<>
 			<div className={css['profile-btn-row']}>
-				<button className={`${css['profile-btn']} ${css['full']}`}>Sign in with Google</button>
+				<button className={`${css['profile-btn']} ${css['full']}`} onClick={() => signIn()}>
+					Sign in with Google
+				</button>
 			</div>
 			<Link href="/sign-in">
 				<a className={css['profile-link']} onClick={() => setProfileAreaOpen(false)}>
