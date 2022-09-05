@@ -1,11 +1,7 @@
-import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import ProfileArea from '../ProfileArea'
 import css from './style.module.scss'
 
 const Nav = ({ profileAreaOpen, setProfileAreaOpen }) => {
-	const { data: session, status } = useSession()
-
 	return (
 		<nav className={css['nav']}>
 			<ul className={css['nav-ul']}>
@@ -25,18 +21,6 @@ const Nav = ({ profileAreaOpen, setProfileAreaOpen }) => {
 					</Link>
 				</li>
 			</ul>
-			{status !== 'loading' && (
-				<button
-					className={css['nav-button']}
-					onClick={(e) => {
-						e.stopPropagation()
-						setProfileAreaOpen(!profileAreaOpen)
-					}}
-				>
-					{session ? 'Profile' : 'Sign in'}
-				</button>
-			)}
-			{profileAreaOpen && <ProfileArea session={session} setProfileAreaOpen={setProfileAreaOpen} />}
 		</nav>
 	)
 }

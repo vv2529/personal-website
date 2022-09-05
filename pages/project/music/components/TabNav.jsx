@@ -7,7 +7,7 @@ const TabNav = () => {
 	return (
 		<nav className={css['nav']}>
 			<ul className={css['nav-ul']}>
-				{['Music', 'Filters', 'Add new song', 'Edit radio stations'].map((caption, i) => {
+				{['Music', 'Filters'].map((caption, i) => {
 					return (
 						<div key={caption} className={css['nav-block']}>
 							<input

@@ -16,8 +16,7 @@ const StationOptions = ({ stations }) => {
 			))}
 		</>
 	)
-	let signedIn = false
-	return signedIn ? <optgroup label="Official stations">{official}</optgroup> : <>{official}</>
+	return official
 }
 
 export default function RadioProject() {

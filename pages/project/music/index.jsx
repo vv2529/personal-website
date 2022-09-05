@@ -3,8 +3,6 @@ import { ResponsiveFramework, PageTitle } from '../../../components/ResponsiveFr
 import TabNav from './components/TabNav'
 import SongContainer from './components/SongContainer'
 import Filters from './components/Filters'
-import AddSong from './components/AddSong'
-import EditStations from './components/EditStations'
 import SongControls from './components/SongControls'
 import EnterURLOverlay from './components/EnterURLOverlay'
 
@@ -37,8 +35,6 @@ export default function MusicProject() {
 				<TabNav />
 				{music.tab === 0 ? <SongContainer /> : ''}
 				{music.tab === 1 ? <Filters /> : ''}
-				{music.tab === 2 ? <AddSong /> : ''}
-				{music.tab === 3 ? <EditStations /> : ''}
 				{music.songPlaying?.id ? <SongControls /> : ''}
 			</ResponsiveFramework>
 			{music.overlayOpen ? <EnterURLOverlay /> : ''}
