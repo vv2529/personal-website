@@ -34,7 +34,6 @@ yarn-error.log*
 .vercel
 
 # extra
-config.json
 /misc
 /bash.exe.stackdump
 /sh.exe.stackdump

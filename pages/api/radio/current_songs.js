@@ -1,5 +1,4 @@
 import mysql from 'mysql2/promise'
-import config from '../../../config.json'
 
 let db
 
@@ -111,7 +110,9 @@ export default async (req, res) => {
 	const latest = +(req.query.latest || 0)
 
 	db = mysql.createPool({
-		...config.database,
+		host: process.env.DB_HOST,
+		user: process.env.DB_USER,
+		password: process.env.DB_PASSWORD,
 		database: 'radio',
 		connectionLimit: Infinity,
 		queueLimit: Infinity,
