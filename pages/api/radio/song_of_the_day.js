@@ -3,7 +3,7 @@ import { connectToDB, rand } from '../../../scripts/functions'
 let db
 
 const getRandomSong = async () => {
-	const songs = (await db.execute(`SELECT id, name FROM songs WHERE addedBy=0`))[0]
+	const songs = (await db.execute(`SELECT id, name FROM songs`))[0]
 	return songs[rand(songs.length)]
 }
 

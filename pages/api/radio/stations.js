@@ -3,9 +3,7 @@ import { connectToDB } from '../../../scripts/functions'
 let db
 
 const getStations = async () => {
-	const stations = (
-		await db.execute(`SELECT id, name FROM stations WHERE createdBy=0 ORDER BY id`)
-	)[0]
+	const stations = (await db.execute(`SELECT id, name FROM stations ORDER BY id`))[0]
 	return stations
 }
 

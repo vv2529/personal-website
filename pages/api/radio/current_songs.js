@@ -40,8 +40,8 @@ const getUpdateIndex = (s) => {
 }
 
 const getSongs = async (stationId, latest) => {
-	const sql = `SELECT * FROM stations WHERE id=? AND createdBy=?`
-	const s = (await db.execute(sql, [stationId, 0]))[0][0] || (await db.execute(sql, [1, 0]))[0][0]
+	const sql = `SELECT * FROM stations WHERE id=?`
+	const s = (await db.execute(sql, [stationId]))[0][0] || (await db.execute(sql, [1]))[0][0]
 
 	const songsFull = (await db.execute(`SELECT * FROM songs`))[0]
 
@@ -74,7 +74,7 @@ const getSongs = async (stationId, latest) => {
 				startTime=?,
 				updateTime=?,
 				endTime=?
-				WHERE id=? AND createdBy=0`,
+				WHERE id=?`,
 			[s.playlist.join(), s.startTime, s.updateTime, s.endTime, stationId]
 		)
 	} else {

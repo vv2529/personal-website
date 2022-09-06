@@ -3,7 +3,7 @@ import { connectToDB } from '../../../scripts/functions'
 let db
 
 const getSongs = async () => {
-	const songs = (await db.execute(`SELECT * FROM songs WHERE addedBy=0 ORDER BY id`))[0]
+	const songs = (await db.execute(`SELECT * FROM songs ORDER BY id`))[0]
 	return songs
 }
 
