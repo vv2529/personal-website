@@ -1,16 +1,8 @@
-import mysql from 'mysql2/promise'
+import { connectToDB, rand, randomShuffle } from '../../../scripts/functions'
 
 let db
 
 const songInterval = 4
-
-const rand = (a) => Math.floor(Math.random() * a)
-
-const randomShuffle = (a) => {
-	const b = []
-	for (let i = a.length; i > 0; i--) b.push(a.splice(rand(i), 1)[0])
-	return b
-}
 
 const newPlaylist = (s, exclude = []) => {
 	const n = Object.keys(s.songs).length
@@ -109,14 +101,7 @@ export default async (req, res) => {
 	const station = +(req.query.station || 1)
 	const latest = +(req.query.latest || 0)
 
-	db = mysql.createPool({
-		host: process.env.DB_HOST,
-		user: process.env.DB_USER,
-		password: process.env.DB_PASSWORD,
-		database: 'radio',
-		connectionLimit: Infinity,
-		queueLimit: Infinity,
-	})
+	db = connectToDB('radio')
 
 	const songs = (await getSongs(station, latest)).map((song) => {
 		delete song.isSong

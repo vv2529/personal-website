@@ -1,10 +1,10 @@
-import mysql from 'mysql2/promise'
+import { connectToDB, rand } from '../../../scripts/functions'
 
 let db
 
 const getRandomSong = async () => {
 	const songs = (await db.execute(`SELECT id, name FROM songs WHERE addedBy=0`))[0]
-	return songs[Math.floor(Math.random() * songs.length)]
+	return songs[rand(songs.length)]
 }
 
 const getSong = async (timeOffset) => {
@@ -45,12 +45,7 @@ const setSong = async (y, m, d) => {
 export default async (req, res) => {
 	const timeOffset = +req.query.time_offset || 0
 
-	db = mysql.createPool({
-		host: process.env.DB_HOST,
-		user: process.env.DB_USER,
-		password: process.env.DB_PASSWORD,
-		database: 'radio',
-	})
+	db = connectToDB('radio')
 
 	const song = await getSong(timeOffset)
 

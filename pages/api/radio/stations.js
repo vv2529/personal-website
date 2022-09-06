@@ -1,4 +1,4 @@
-import mysql from 'mysql2/promise'
+import { connectToDB } from '../../../scripts/functions'
 
 let db
 
@@ -10,12 +10,7 @@ const getStations = async () => {
 }
 
 export default async (req, res) => {
-	db = mysql.createPool({
-		host: process.env.DB_HOST,
-		user: process.env.DB_USER,
-		password: process.env.DB_PASSWORD,
-		database: 'radio',
-	})
+	db = connectToDB('radio')
 
 	const stations = await getStations()
 
