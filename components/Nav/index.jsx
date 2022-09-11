@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import css from './style.module.scss'
 
-const Nav = ({ profileAreaOpen, setProfileAreaOpen }) => {
+const Nav = () => {
 	return (
 		<nav className={css['nav']}>
 			<ul className={css['nav-ul']}>
