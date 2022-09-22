@@ -1,7 +1,5 @@
 # My personal website
 
-Currently WIP
+Comes along with Music and Radio projects
 
-Includes Music and Radio projects
-
-Built primarily with Next.js
+Built on Next.js
