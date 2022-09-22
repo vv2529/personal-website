@@ -7,13 +7,14 @@ const ResponsiveFramework = ({ children, title, status }) => {
 			<div className={css['inner-container']}>
 				{children}
 				<div
-					className={`${css['status']} ${css['status-loading']} ${
-						status === 'loading' ? '' : 'hidden'
-					}`}
-				></div>
-				<div
-					className={`${css['status']} ${css['status-error']} ${
-						status === 'error' ? '' : 'hidden'
+					className={`${css['status']} ${
+						css[
+							status === 'loading'
+								? 'status-loading'
+								: status === 'error'
+								? 'status-error'
+								: 'hidden'
+						]
 					}`}
 				></div>
 			</div>
