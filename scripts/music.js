@@ -70,3 +70,10 @@ export const getPreloadedAudio = async (src, startTime = 0) => {
 		audio.addEventListener('abort', abort)
 	})
 }
+
+export const getRandomSongs = async (n = 1, onlyNames = true) => {
+	const response = await (
+		await fetch(`/api/music/songs?random&n=${n}${onlyNames ? `&only_names` : ''}`)
+	).json()
+	return onlyNames ? response : response.map(transformSong)
+}

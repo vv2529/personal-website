@@ -1,0 +1,25 @@
+@import '../../../scss/_var';
+
+.bg {
+	position: fixed;
+	width: 100vw;
+	height: 100vh;
+	z-index: -9;
+}
+
+.bg-text {
+	position: fixed;
+	transform: translate(-50%, -50%);
+	white-space: nowrap;
+	font-family: Georgia;
+}
+
+.bg-text[data-wide-screen-only] {
+	display: none;
+}
+
+@media (min-width: 768px) {
+	.bg-text[data-wide-screen-only] {
+		display: block;
+	}
+}

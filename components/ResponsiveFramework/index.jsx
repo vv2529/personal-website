@@ -1,9 +1,10 @@
 import PageContainer from '../PageContainer'
 import css from './style.module.scss'
 
-const ResponsiveFramework = ({ children, title, status }) => {
+const ResponsiveFramework = ({ children, title, status, background }) => {
 	return (
 		<PageContainer title={title} className={css['page-container']}>
+			{background || ''}
 			<div className={css['inner-container']}>
 				{children}
 				<div

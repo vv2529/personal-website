@@ -13,6 +13,7 @@ const radioContext = createContext(
 			volume: 1,
 			status: 'loading',
 			selectForbidden: true,
+			background: {},
 		},
 		internalLets: {
 			setupComplete: false,

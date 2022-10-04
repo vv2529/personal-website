@@ -1,5 +1,5 @@
 import Model from '../../../scripts/Model'
-import { transformSong, getPreloadedAudio } from '../../../scripts/music'
+import { transformSong, getPreloadedAudio, getRandomSongs } from '../../../scripts/music'
 
 export default class RadioModel extends Model {
 	currentTime() {
@@ -279,6 +279,8 @@ export default class RadioModel extends Model {
 
 	setup() {
 		if (!this.SSR) {
+			if (isNaN(+localStorage.radio_volume)) localStorage.radio_volume = 1
+
 			this.audio = this.createSingleAudio()
 
 			this.changeStations()
@@ -292,6 +294,12 @@ export default class RadioModel extends Model {
 
 			window.addEventListener('click', click)
 		}
+
+		const fetched = getRandomSongs(25, true)
+		fetched.then(async (songs) => {
+			songs = songs.map((song) => song.replace(/ \(feat\. .+?\)/, ''))
+			this.background = { songs }
+		})
 
 		this.setupComplete = true
 	}

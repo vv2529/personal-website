@@ -37,6 +37,7 @@ const musicContext = createContext(
 			overlayOpen: false,
 			customURL: '',
 			highlightIndex: -1,
+			background: {},
 		},
 		internalLets: {
 			setupComplete: false,

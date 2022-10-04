@@ -1,4 +1,4 @@
-import { connectToDB } from '../../../scripts/functions'
+import { connectToDB } from '../../../scripts/database'
 
 let db
 

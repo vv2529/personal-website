@@ -1,5 +1,6 @@
 import { FaExternalLinkAlt } from 'react-icons/fa'
 import { ResponsiveFramework, PageTitle } from '../../../components/ResponsiveFramework'
+import MusicBackground from '../../../components/background/MusicBackground'
 import useRadioModel from './useRadioModel'
 import css from './style.module.scss'
 
@@ -28,6 +29,7 @@ export default function RadioProject() {
 		'volume',
 		'status',
 		'selectForbidden',
+		'background',
 	])
 
 	if (!radio.setupComplete) {
@@ -35,7 +37,11 @@ export default function RadioProject() {
 	}
 
 	return (
-		<ResponsiveFramework title="Radio" status={radio.status}>
+		<ResponsiveFramework
+			title="Radio"
+			status={radio.status}
+			background={<MusicBackground data={radio.background} />}
+		>
 			<div className={css['main-block']}>
 				<PageTitle title="Radio" />
 				<div className={css['main-section']}>

@@ -1,3 +1,4 @@
+import { randomShuffle } from '../../../scripts/functions'
 import Model from '../../../scripts/Model'
 import { transformSong, getPreloadedAudio } from '../../../scripts/music'
 import css from './style.module.scss'
@@ -16,14 +17,10 @@ export default class MusicModel extends Model {
 		this.audio.preservesPitch = this.audio.mozPreservesPitch = this.options.preservePitch
 		this.audio.loop = this.options.loop
 
-		if ('music_volume' in localStorage && isFinite(+localStorage.music_volume)) {
-			this.volume = Math.min(Math.max(+localStorage.music_volume, 0), 1)
-		}
+		this.volume = Math.min(Math.max(+localStorage.music_volume, 0), 1)
 		this.audio.volume = this.volume
 
-		if ('music_speed' in localStorage && isFinite(+localStorage.music_speed)) {
-			this.speed = Math.min(Math.max(+localStorage.music_speed, 0.5), 2)
-		}
+		this.speed = Math.min(Math.max(+localStorage.music_speed, 0.5), 2)
 		this.audio.defaultPlaybackRate = this.audio.playbackRate = this.speed
 
 		this.audio.oncanplay = () => {
@@ -117,14 +114,18 @@ export default class MusicModel extends Model {
 	async getSongs() {
 		const response = await (await fetch('/api/music/songs')).json()
 		this.songs = response.map(transformSong)
-		return this.songs
+
+		const songs = randomShuffle(this.songs)
+			.slice(0, 25)
+			.map((song) => song.name.replace(/ \(feat\. .+?\)/, ''))
+		this.background = { songs }
 	}
 
 	async changeSongs() {
-		const songs = await this.getSongs()
+		await this.getSongs()
 		let min = 9999,
 			max = 0
-		songs.forEach(({ duration }) => {
+		this.songs.forEach(({ duration }) => {
 			if (duration < min) min = duration
 			if (duration > max) max = duration
 		})
@@ -133,7 +134,6 @@ export default class MusicModel extends Model {
 		f.totalMax = max
 		if (f.min < min) f.min = min
 		if (f.max > max) f.max = max
-		this.songs = songs
 	}
 
 	filterSongs() {
@@ -217,6 +217,8 @@ export default class MusicModel extends Model {
 
 	setup() {
 		if (!this.SSR) {
+			if (isNaN(+localStorage.music_volume)) localStorage.music_volume = 1
+			if (isNaN(+localStorage.music_speed)) localStorage.music_speed = 1
 			this.filters = this.getLocalFilters()
 			this.options = this.getLocalOptions()
 			this.createAudio()

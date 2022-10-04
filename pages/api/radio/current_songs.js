@@ -1,4 +1,5 @@
-import { connectToDB, rand, randomShuffle } from '../../../scripts/functions'
+import { rand, randomShuffle } from '../../../scripts/functions'
+import { connectToDB } from '../../../scripts/database'
 
 let db
 

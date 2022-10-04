@@ -4,6 +4,7 @@ $primary-color: hsl(240, 0%, 15%);
 // $primary-dark-3: scale-color($primary-color, $lightness: -15%);
 $primary-dark-1: hsl(240, 0%, 10%);
 $primary-dark-2: hsl(240, 0%, 0%);
+$primary-dark-3: hsl(240, 0%, 5%);
 
 @mixin flex-align-center {
 	display: flex;

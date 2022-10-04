@@ -38,6 +38,7 @@
 	&-block {
 		@include full-height-align-center;
 		width: 100%;
+		background: rgba($primary-dark-3, $alpha: 0.5);
 
 		&:not(:first-of-type) {
 			border-left: 1px solid #ddd;
@@ -290,6 +291,7 @@
 	width: 100%;
 	min-height: 2em;
 	border-top: 1px solid #ddd;
+	background: rgba($primary-dark-3, $alpha: 0.25);
 
 	&-body {
 		margin: 0 0.5em;

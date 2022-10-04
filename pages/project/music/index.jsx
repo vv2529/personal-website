@@ -1,5 +1,6 @@
 import useMusicModel from './useMusicModel'
 import { ResponsiveFramework, PageTitle } from '../../../components/ResponsiveFramework'
+import MusicBackground from '../../../components/background/MusicBackground'
 import TabNav from './components/TabNav'
 import SongContainer from './components/SongContainer'
 import Filters from './components/Filters'
@@ -22,6 +23,7 @@ export default function MusicProject() {
 		'overlayOpen',
 		'customURL',
 		'highlightIndex',
+		'background',
 	])
 
 	if (!music.setupComplete) {
@@ -30,7 +32,11 @@ export default function MusicProject() {
 
 	return (
 		<>
-			<ResponsiveFramework title="Music" status={music.status}>
+			<ResponsiveFramework
+				title="Music"
+				status={music.status}
+				background={<MusicBackground data={music.background} />}
+			>
 				<PageTitle title="Music" />
 				<TabNav />
 				{music.tab === 0 ? <SongContainer /> : ''}

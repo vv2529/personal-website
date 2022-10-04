@@ -13,6 +13,7 @@
 	height: 100%;
 	display: flex;
 	flex-direction: column;
+	background: rgba($primary-dark-3, $alpha: 0.75);
 
 	@media screen and (orientation: landscape) {
 		@media (min-width: 769px) {
@@ -30,6 +31,7 @@
 	padding: 0.5em 0;
 	border-bottom: 1px solid #ddd;
 	text-align: center;
+	background: rgba($primary-dark-3, $alpha: 0.9);
 }
 
 .status {

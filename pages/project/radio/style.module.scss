@@ -5,8 +5,10 @@
 	min-height: 75%;
 }
 .options-block {
+	height: 100%;
 	border-top: 1px solid #ddd;
 	overflow: hidden;
+	background: rgba($primary-dark-3, $alpha: 0.75);
 }
 
 .main-section {
@@ -20,12 +22,16 @@
 	padding: 0.75em 0.9em;
 	border: none;
 	border-bottom: 1px solid #ddd;
-	background: $primary-color;
+	background: none;
 	color: #fff;
 	cursor: pointer;
 
 	&:disabled {
 		color: #888;
+	}
+
+	&:focus {
+		outline: none;
 	}
 }
 
