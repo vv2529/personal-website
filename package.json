@@ -1,20 +1,20 @@
 {
-  "name": "next-template",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
-  },
-  "dependencies": {
-    "mysql2": "^2.3.2",
-    "next": "^12.1.0",
-    "next-auth": "^4.3.1",
-    "normalize-scss": "^7.0.1",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "react-icons": "^4.2.0",
-    "sass": "^1.43.2"
-  }
+	"name": "next-template",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start"
+	},
+	"dependencies": {
+		"mysql2": "^2.3.3",
+		"next": "^12.3.1",
+		"next-auth": "^4.12.2",
+		"normalize-scss": "^7.0.1",
+		"react": "17.0.2",
+		"react-dom": "17.0.2",
+		"react-icons": "^4.4.0",
+		"sass": "^1.55.0"
+	}
 }
