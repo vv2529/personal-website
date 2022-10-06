@@ -46,6 +46,7 @@ const musicContext = createContext(
 			isSeeking: false,
 			justLoaded: true,
 			hadError: false,
+			isPreloading: false,
 			waitingTimeout: 0,
 		},
 		consts: {

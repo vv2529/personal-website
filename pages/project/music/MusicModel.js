@@ -11,28 +11,26 @@ export default class MusicModel extends Model {
 		return `${m}:${s < 10 ? 0 : ''}${s}`
 	}
 
-	createAudio() {
-		this.audio = new Audio()
+	createAudio(audio) {
+		this.audio = audio || new Audio()
 		this.audio.preload = true
 		this.audio.preservesPitch = this.audio.mozPreservesPitch = this.options.preservePitch
 		this.audio.loop = this.options.loop
-
-		this.volume = Math.min(Math.max(+localStorage.music_volume, 0), 1)
 		this.audio.volume = this.volume
-
-		this.speed = Math.min(Math.max(+localStorage.music_speed, 0.5), 2)
 		this.audio.defaultPlaybackRate = this.audio.playbackRate = this.speed
 
-		this.audio.oncanplay = () => {
+		this.audio.oncanplay = (e) => {
+			if (this.isPreloading) return
 			if (this.justLoaded) {
 				this.justLoaded = false
-				this.audio.play().catch(() => {})
+				e.target.play().catch(() => {})
 			}
 			clearTimeout(this.waitingTimeout)
 			this.status = ''
 		}
 
 		this.audio.onwaiting = () => {
+			if (this.isPreloading) return
 			clearTimeout(this.waitingTimeout)
 			this.waitingTimeout = setTimeout(() => {
 				this.status = 'loading'
@@ -40,6 +38,7 @@ export default class MusicModel extends Model {
 		}
 
 		this.audio.onerror = (e) => {
+			if (this.isPreloading) return
 			e.preventDefault()
 			clearTimeout(this.waitingTimeout)
 			this.status = 'error'
@@ -50,18 +49,25 @@ export default class MusicModel extends Model {
 				this.audio.src += ''
 			}
 		}
+
 		this.audio.onabort = (e) => {
 			e.preventDefault()
 		}
+
 		this.audio.onplaying = () => {
+			if (this.isPreloading) return
 			clearTimeout(this.waitingTimeout)
 			if (this.songPlaying.paused) this.songPlaying = { ...this.songPlaying, paused: false }
 		}
+
 		this.audio.onpause = () => {
+			if (this.isPreloading) return
 			if (!this.songPlaying.paused) this.songPlaying = { ...this.songPlaying, paused: true }
 		}
-		this.audio.ontimeupdate = () => {
-			if (!this.isSeeking) this.currentTime = this.audio.currentTime
+
+		this.audio.ontimeupdate = (e) => {
+			if (this.isPreloading) return
+			if (!this.isSeeking) this.currentTime = e.target.currentTime
 		}
 	}
 
@@ -91,9 +97,12 @@ export default class MusicModel extends Model {
 		this.currentTime = 0
 		this.justLoaded = true
 		this.hadError = false
-		this.audio.currentTime = 0
-		this.audio.src = song.link
-		getPreloadedAudio(song.link)
+		this.isPreloading = true
+		this.audio.pause()
+		getPreloadedAudio(song.link, 0, this.audio).then(() => {
+			this.isPreloading = false
+			this.audio.oncanplay({ target: this.audio })
+		})
 	}
 
 	playCustomURL() {
@@ -219,6 +228,8 @@ export default class MusicModel extends Model {
 		if (!this.SSR) {
 			if (isNaN(+localStorage.music_volume)) localStorage.music_volume = 1
 			if (isNaN(+localStorage.music_speed)) localStorage.music_speed = 1
+			this.volume = Math.min(Math.max(+localStorage.music_volume, 0), 1)
+			this.speed = Math.min(Math.max(+localStorage.music_speed, 0.5), 2)
 			this.filters = this.getLocalFilters()
 			this.options = this.getLocalOptions()
 			this.createAudio()

@@ -20,14 +20,16 @@ export const transformSong = (song) => {
 	}
 }
 
-export const getPreloadedAudio = async (src, startTime = 0) => {
-	const audio = new Audio()
+export const getPreloadedAudio = async (src, startTime = 0, originalAudio) => {
+	const audio = originalAudio || new Audio()
 	audio.preload = true
 	audio.muted = true
 	audio.currentTime = startTime
 	audio.src = src
 
-	audio.play().catch(() => {})
+	try {
+		await audio.play()
+	} catch (e) {}
 
 	const timeupdate = () => {
 		const edge = audio.buffered.end(audio.buffered.length - 1)
@@ -45,7 +47,7 @@ export const getPreloadedAudio = async (src, startTime = 0) => {
 			audio.removeEventListener('timeupdate', timeupdate)
 			audio.removeEventListener('ended', ended)
 			audio.removeEventListener('error', error)
-			audio.removeEventListener('abort', removeAll)
+			audio.removeEventListener('abort', abort)
 		}
 
 		const abort = (e) => {
@@ -56,6 +58,8 @@ export const getPreloadedAudio = async (src, startTime = 0) => {
 
 		const ended = () => {
 			removeAll()
+			audio.muted = false
+			audio.currentTime = startTime
 			resolve(audio)
 		}
 
