@@ -1,6 +1,6 @@
-import { randomShuffle } from '../../../scripts/functions'
-import Model from '../../../scripts/Model'
-import { transformSong, getPreloadedAudio } from '../../../scripts/music'
+import { randomShuffle } from '../../scripts/functions'
+import Model from '../../scripts/Model'
+import { transformSong, getPreloadedAudio } from '../../scripts/music'
 import css from './style.module.scss'
 
 export default class MusicModel extends Model {

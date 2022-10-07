@@ -5,13 +5,13 @@ import Nav from '../Nav'
 const Layout = ({ children }) => {
 	const router = useRouter()
 
-	return router.pathname.startsWith('/project/') ? (
-		<div className={css['container']}>{children}</div>
-	) : (
+	return router.pathname === '/' ? (
 		<div className={css['container']}>
 			<Nav />
 			<main className={css['main']}>{children}</main>
 		</div>
+	) : (
+		<div className={css['container']}>{children}</div>
 	)
 }
 

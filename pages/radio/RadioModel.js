@@ -1,5 +1,5 @@
-import Model from '../../../scripts/Model'
-import { transformSong, getPreloadedAudio, getRandomSongs } from '../../../scripts/music'
+import Model from '../../scripts/Model'
+import { transformSong, getPreloadedAudio, getRandomSongs } from '../../scripts/music'
 
 export default class RadioModel extends Model {
 	currentTime() {

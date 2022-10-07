@@ -1,5 +1,5 @@
 import { createContext } from 'react'
-import Context from '../../../scripts/Context'
+import Context from '../../scripts/Context'
 
 const defaultSong = { id: 0, name: '—' }
 

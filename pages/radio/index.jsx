@@ -1,6 +1,6 @@
 import { FaExternalLinkAlt } from 'react-icons/fa'
-import { ResponsiveFramework, PageTitle } from '../../../components/ResponsiveFramework'
-import MusicBackground from '../../../components/background/MusicBackground'
+import { ResponsiveFramework, PageTitle } from '../../components/ResponsiveFramework'
+import MusicBackground from '../../components/background/MusicBackground'
 import useRadioModel from './useRadioModel'
 import css from './style.module.scss'
 

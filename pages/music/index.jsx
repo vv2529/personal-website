@@ -1,6 +1,6 @@
 import useMusicModel from './useMusicModel'
-import { ResponsiveFramework, PageTitle } from '../../../components/ResponsiveFramework'
-import MusicBackground from '../../../components/background/MusicBackground'
+import { ResponsiveFramework, PageTitle } from '../../components/ResponsiveFramework'
+import MusicBackground from '../../components/background/MusicBackground'
 import TabNav from './components/TabNav'
 import SongContainer from './components/SongContainer'
 import Filters from './components/Filters'
