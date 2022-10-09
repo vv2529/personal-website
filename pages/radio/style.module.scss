@@ -3,9 +3,10 @@
 
 .main-block {
 	min-height: 75%;
+	overflow-y: auto;
 }
 .options-block {
-	height: 100%;
+	min-height: 25%;
 	border-top: 1px solid #ddd;
 	overflow: hidden;
 	background: rgba($primary-dark-3, $alpha: 0.75);
@@ -13,6 +14,10 @@
 
 .main-section {
 	margin: 20px 10px;
+
+	&:last-child {
+		margin-bottom: 0;
+	}
 }
 
 .station-select {
@@ -32,7 +37,13 @@
 
 	&:focus {
 		outline: none;
+		background: linear-gradient(rgba($primary-dark-3, $alpha: 0.75), rgba($primary-dark-3, $alpha: 0.75)), $primary-color;
 	}
+}
+
+.station-option {
+	margin: 0;
+	background: $primary-color;
 }
 
 .section-caption {

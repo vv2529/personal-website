@@ -1,3 +1,4 @@
+import { fetchFromAPI } from '../../scripts/functions'
 import Model from '../../scripts/Model'
 import { transformSong, getPreloadedAudio, getRandomSongs } from '../../scripts/music'
 
@@ -17,6 +18,40 @@ export default class RadioModel extends Model {
 		return audio
 	}
 
+	removeEventListeners() {
+		this.audio.onerror =
+			this.audio.onwaiting =
+			this.audio.onplaying =
+			this.audio.onabort =
+			this.audio.ontimeupdate =
+				null
+	}
+
+	setTitle(songName) {
+		this.title = songName && songName !== this.defaultSong.name ? `${songName} | Radio` : 'Radio'
+	}
+
+	preloadSong(songs, i) {
+		if (![0, 1].includes(i)) return
+		if (!songs[i].preloaded) {
+			songs[i].preloaded = new Audio()
+			songs[i].preloading = true
+			getPreloadedAudio(
+				songs[i].link,
+				Math.max(this.currentTime() - songs[i].startTime, 0),
+				songs[i].preloaded
+			)
+				.then(() => {})
+				.catch(() => {
+					delete songs[i].preloaded
+				})
+				.finally(() => {
+					delete songs[i].preloading
+					this.preloadSong(songs, i + 1)
+				})
+		} else this.preloadSong(songs, i + 1)
+	}
+
 	async getSongs(stationId, secondTry) {
 		let songs = this.savedSongs[stationId] || []
 		const startTime = Date.now()
@@ -27,14 +62,14 @@ export default class RadioModel extends Model {
 			if (stationId) {
 				let response
 				try {
-					response = await (await fetch(`/api/radio/current_songs?station=${stationId}`)).json()
+					response = await fetchFromAPI(`radio/current_songs?station=${stationId}`)
 				} catch (e) {
 					if (secondTry) this.status = 'error'
 					else return await this.getSongs.call(this, stationId, true)
 				}
 
 				const endTime = Date.now()
-				const approxOffset = Math.round((endTime - startTime) / 2000)
+				const approxOffset = Math.round(((endTime - startTime) / 1000) * (2 / 3))
 
 				response[0][6] += approxOffset
 				if (response[0][6] >= response[0][5] + this.songInterval)
@@ -55,6 +90,10 @@ export default class RadioModel extends Model {
 
 				if (this.savedSongs[stationId]) {
 					try {
+						if (this.savedSongs[stationId][0].startTime !== songs[0].startTime) {
+							this.savedSongs[stationId].shift()
+						}
+
 						if (this.savedSongs[stationId][0].startTime === songs[0].startTime) {
 							this.savedSongs[stationId][2] = songs[2]
 							songs = this.savedSongs[stationId]
@@ -63,21 +102,25 @@ export default class RadioModel extends Model {
 						}
 					} catch (e) {}
 				} else this.savedSongs[stationId] = songs
+
+				this.preloadSong(songs, 0)
 			}
 
 			for (let i = 0; i < 3; i++) if (!songs[i]) songs[i] = this.defaultSong
 		}
+
+		this.setTitle(songs[0].name)
 
 		return songs
 	}
 
 	async changeCurrentStation(id = this.currentStation) {
 		this.audio.pause()
-		this.startedPreloading = false
 		if (id !== this.currentStation) {
 			this.status = ''
 			this.currentStation = id
 			this.currentSongs = [this.defaultSong, this.defaultSong, this.defaultSong]
+			this.setTitle()
 			this.selectForbidden = true
 			clearTimeout(this.timeoutID)
 			clearTimeout(this.waitingTimeout)
@@ -112,20 +155,14 @@ export default class RadioModel extends Model {
 
 			this.timeoutID = setTimeout(() => {
 				playingIndex = 1
-				setNextSrc()
-
-				try {
-					preload()
-					this.startedPreloading = true
-				} catch (e) {
-					console.log('Preloading failed.')
-				}
+				setNextSrc(true)
 
 				this.timeoutID = setTimeout(() => {
 					if (id !== this.currentStation) return
 					if (this.savedSongs[id].length === 3) this.savedSongs[id].shift()
+					this.setTitle(this.savedSongs[id][0].name)
 					this.changeSongs.call(this, id)
-					setTimeout(() => this.getSongs.call(this, id), 1000)
+					setTimeout(() => this.getSongs.call(this, id), 2000)
 				}, time2 * 1000)
 			}, time1 * 1000)
 		}
@@ -142,62 +179,55 @@ export default class RadioModel extends Model {
 			playingIndex = 1
 		}
 
-		const setNextSrc = () => {
+		const setNextSrc = (refreshInMemory = false) => {
 			this.audio.pause()
-			if (this.audio.src !== this.savedSongs[id][playingIndex].link) {
-				this.audio.onerror =
-					this.audio.onwaiting =
-					this.audio.onplaying =
-					this.audio.onabort =
-					this.audio.ontimeupdate =
-						null
-				if (this.savedSongs[id][playingIndex].preloadedAudio) {
+			this.removeEventListeners()
+			const saved = this.savedSongs[id][playingIndex]
+			if (this.audio.src !== saved.link) {
+				if (!saved.preloaded || saved.preloaded?.src !== saved.link) {
+					delete saved.preloaded
+					this.preloadSong(this.savedSongs[id], playingIndex)
+					this.audio.src = saved.link
+				} else if (!saved.preloading) {
 					this.audio.src += ''
-					this.audio = this.savedSongs[id][playingIndex].preloadedAudio
-					this.audio.muted = false
+					this.audio = saved.preloaded
 					this.audio.volume = this.volume
-				} else this.audio.src = this.savedSongs[id][playingIndex].link
+
+					if (refreshInMemory && saved.startTime - this.currentTime() > 3) {
+						this.audio.muted = true
+						this.audio
+							.play()
+							.then(() => {
+								const onpause = (e) => {
+									e.target.muted = false
+									e.target.removeEventListener('pause', onpause)
+									e.target.removeEventListener('timeupdate', ontimeupdate)
+								}
+
+								const ontimeupdate = (e) => {
+									if (e.target.currentTime > 0.5) {
+										e.target.pause()
+										e.target.muted = false
+										e.target.removeEventListener('timeupdate', ontimeupdate)
+										e.target.currentTime = 0
+									}
+								}
+
+								this.audio.addEventListener('pause', onpause)
+								this.audio.addEventListener('timeupdate', ontimeupdate)
+							})
+							.catch(() => {})
+					}
+				} else this.audio.src = saved.link
 			}
-		}
-
-		const preload = () => {
-			if (this.startedPreloading) return
-
-			const onError = () => {}
-
-			const preloadNext = () => {
-				if (id !== this.currentStation) return
-
-				// console.log('Preloading:', songs[1].name)
-				if (!songs[1].preloaded)
-					getPreloadedAudio(songs[1].link, Math.max(this.currentTime() - songs[1].startTime, 0))
-						.then((preloadedAudio) => {
-							songs[1].preloaded = preloadedAudio
-						})
-						.catch(onError)
-			}
-
-			const songs = this.savedSongs[id].slice(playingIndex, playingIndex + 2)
-			// console.log('Preloading:', songs[0].name)
-
-			songs[0].preloaded
-				? preloadNext()
-				: getPreloadedAudio(songs[0].link, Math.max(this.currentTime() - songs[0].startTime, 0))
-						.then((preloadedAudio) => {
-							songs[0].preloaded = preloadedAudio
-							preloadNext()
-						})
-						.catch(onError)
 		}
 
 		setNextSrc()
-		preload()
-		this.startedPreloading = false
 
 		if (playingIndex === 1) return
 
 		this.audio.currentTime = Math.max(this.currentTime() - this.savedSongs[id][0].startTime, 0)
-		if (this.audio.currentTime < 1) this.audio.currentTime = 0
+		if (this.audio.currentTime < 1.5) this.audio.currentTime = 0
 
 		if (
 			this.audio.currentTime < this.savedSongs[id][0].duration &&
@@ -212,7 +242,6 @@ export default class RadioModel extends Model {
 			e.preventDefault()
 			if (id === this.currentStation) {
 				this.status = 'error'
-				// console.log('Error:', this.audio.currentTime, this.audio)
 				if (errorCount < maxErrorCount) {
 					this.audio.src += ''
 					errorCount++
@@ -234,17 +263,19 @@ export default class RadioModel extends Model {
 			e.preventDefault()
 		}
 
-		this.audio.ontimeupdate = () => {
+		this.audio.ontimeupdate = (e) => {
+			if (id !== this.currentStation) return
+
 			let diff = this.audio.currentTime - this.savedSongs[id][0].duration
-			if (diff >= 0) {
-				playingIndex = 1
-				setNextSrc()
+			if (diff >= 0 || this.audio.currentTime >= this.audio.duration) {
+				this.audio.pause()
+				this.removeEventListeners()
 				return
 			}
 
 			const ideal = this.currentTime() - this.savedSongs[id][0].startTime
 			diff = ideal - this.audio.currentTime
-			if (diff > 1) {
+			if (diff > 1.5) {
 				this.audio.currentTime = ideal
 			}
 		}
@@ -254,7 +285,7 @@ export default class RadioModel extends Model {
 		const date = new Date()
 		const timeOffset = date.getTimezoneOffset()
 		const day = date.getDate()
-		const song = await (await fetch(`/api/radio/song_of_the_day?time_offset=${timeOffset}`)).json()
+		const song = await fetchFromAPI(`radio/song_of_the_day?time_offset=${timeOffset}`)
 		song.day = day
 		this.songOfTheDay = song
 		this.status = ''
@@ -267,7 +298,7 @@ export default class RadioModel extends Model {
 	}
 
 	async getStations() {
-		const stations = await (await fetch('/api/radio/stations')).json()
+		const stations = await fetchFromAPI('radio/stations')
 		return stations.map(([id, name]) => ({ id, name }))
 	}
 

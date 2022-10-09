@@ -1,7 +1,12 @@
 import { createContext } from 'react'
 import Context from '../../scripts/Context'
 
-const defaultSong = { id: 0, name: '—' }
+const defaultSong = {
+	id: 0,
+	name: '—',
+	duration: 0,
+	paused: true,
+}
 const defaultFilters = {
 	hard: false,
 	lyrics: [true, true, true],
@@ -18,6 +23,8 @@ const defaultOptions = {
 	showSpeedSlider: false,
 	preservePitch: false,
 	loop: false,
+	autoplay: false,
+	random: false,
 }
 
 const musicContext = createContext(
@@ -37,7 +44,10 @@ const musicContext = createContext(
 			overlayOpen: false,
 			customURL: '',
 			highlightIndex: -1,
+			scrollTopChanged: false,
 			background: {},
+			title: 'Music',
+			controlsShown: false,
 		},
 		internalLets: {
 			setupComplete: false,
@@ -47,7 +57,10 @@ const musicContext = createContext(
 			justLoaded: true,
 			hadError: false,
 			isPreloading: false,
+			isPausedOnLoad: false,
+			scrollTop: 0,
 			waitingTimeout: 0,
+			controlsAutoShown: false,
 		},
 		consts: {
 			SSR: !('window' in globalThis),

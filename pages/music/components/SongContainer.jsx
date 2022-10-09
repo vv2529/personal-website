@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import useMusicModel from '../useMusicModel'
-import { AiFillCaretLeft, AiFillCaretRight } from 'react-icons/ai'
+import { AiFillCaretLeft, AiFillCaretRight, AiFillCaretDown, AiFillCaretUp } from 'react-icons/ai'
 import { FaSearch } from 'react-icons/fa'
 import Song from './Song'
 import css from '../style.module.scss'
@@ -9,7 +9,7 @@ const SongContainer = () => {
 	const music = useMusicModel()
 
 	const songs = music.filterSongs()
-	const changePage = (value) => (music.page = Math.min(Math.max(value, 1), pages))
+	const changePage = (value) => music.changePage(Math.min(Math.max(value, 1), pages))
 	const setSearch = (e) => (music.filters = { ...music.filters, search: e.target.value })
 	const pages = Math.ceil(songs.length / music.songsPerPage) || 1
 
@@ -17,7 +17,13 @@ const SongContainer = () => {
 		height = 50,
 		padding = 30,
 		body = useRef(null)
-	if (music.highlightIndex !== -1 && body.current) body.current.scrollTop = height * hi - padding
+	if (body.current) {
+		if (music.highlightIndex !== -1) body.current.scrollTop = height * hi - padding
+		if (music.scrollTopChanged) {
+			body.current.scrollTop = music.scrollTop
+			music.scrollTopChanged = false
+		}
+	}
 
 	return (
 		<div className={css['page-section']}>
@@ -42,6 +48,14 @@ const SongContainer = () => {
 					))}
 			</div>
 			<div className={css['song-container-footer']}>
+				<button
+					className={`${css['btn-arrow']} ${css['btn-arrow-floating']}`}
+					onClick={() => {
+						music.controlsShown = !music.controlsShown
+					}}
+				>
+					{music.controlsShown ? <AiFillCaretDown /> : <AiFillCaretUp />}
+				</button>
 				<button
 					className={css['btn-arrow']}
 					onClick={() => changePage(music.page - 1)}

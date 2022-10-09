@@ -6,6 +6,8 @@ import SongContainer from './components/SongContainer'
 import Filters from './components/Filters'
 import SongControls from './components/SongControls'
 import EnterURLOverlay from './components/EnterURLOverlay'
+import { useEffect } from 'react'
+import css from './style.module.scss'
 
 export default function MusicProject() {
 	const music = useMusicModel([
@@ -24,24 +26,29 @@ export default function MusicProject() {
 		'customURL',
 		'highlightIndex',
 		'background',
+		'title',
+		'controlsShown',
 	])
 
-	if (!music.setupComplete) {
-		music.setup()
-	}
+	useEffect(() => {
+		if (!music.setupComplete) {
+			music.setup()
+		}
+	})
 
 	return (
 		<>
 			<ResponsiveFramework
-				title="Music"
+				title={music.title}
 				status={music.status}
 				background={<MusicBackground data={music.background} />}
+				verticalScroll={false}
 			>
 				<PageTitle title="Music" />
 				<TabNav />
 				{music.tab === 0 ? <SongContainer /> : ''}
 				{music.tab === 1 ? <Filters /> : ''}
-				{music.songPlaying?.id ? <SongControls /> : ''}
+				<SongControls />
 			</ResponsiveFramework>
 			{music.overlayOpen ? <EnterURLOverlay /> : ''}
 		</>

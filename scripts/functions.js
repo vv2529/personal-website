@@ -6,3 +6,10 @@ export const randomShuffle = (a) => {
 	for (let i = a.length; i > 0; i--) b.push(a.splice(rand(i), 1)[0])
 	return b
 }
+
+export const fetchFromAPI = async (path) => {
+	try {
+		const response = await fetch(`/api/${path}`)
+		return await response.json()
+	} catch (e) {}
+}

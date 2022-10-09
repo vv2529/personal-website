@@ -1,9 +1,20 @@
 import PageContainer from '../PageContainer'
 import css from './style.module.scss'
 
-const ResponsiveFramework = ({ children, title, status, background }) => {
+const ResponsiveFramework = ({
+	children,
+	title,
+	status,
+	background,
+	classNames = [],
+	verticalScroll,
+}) => {
 	return (
-		<PageContainer title={title} className={css['page-container']}>
+		<PageContainer
+			title={title}
+			classNames={[...classNames, css['page-container']]}
+			verticalScroll={verticalScroll}
+		>
 			{background || ''}
 			<div className={css['inner-container']}>
 				{children}

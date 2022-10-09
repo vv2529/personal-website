@@ -1,5 +1,7 @@
+import { fetchFromAPI } from './functions'
+
 export const transformSong = (song) => {
-	return {
+	const object = {
 		id: song[0],
 		name: song[1],
 		linkId: song[2],
@@ -18,20 +20,26 @@ export const transformSong = (song) => {
 		isSong: song[6],
 		isHard: song[7],
 	}
+
+	if (object.isSong === undefined) delete object.isSong
+	if (object.isHard === undefined) delete object.isHard
+
+	return object
 }
 
 export const getPreloadedAudio = async (src, startTime = 0, originalAudio) => {
 	const audio = originalAudio || new Audio()
 	audio.preload = true
 	audio.muted = true
-	audio.currentTime = startTime
 	audio.src = src
+	audio.currentTime = startTime
 
 	try {
 		await audio.play()
 	} catch (e) {}
 
 	const timeupdate = () => {
+		if (audio.buffered.length === 0) return
 		const edge = audio.buffered.end(audio.buffered.length - 1)
 		if (edge - audio.currentTime > 1) {
 			audio.currentTime = edge
@@ -76,8 +84,6 @@ export const getPreloadedAudio = async (src, startTime = 0, originalAudio) => {
 }
 
 export const getRandomSongs = async (n = 1, onlyNames = true) => {
-	const response = await (
-		await fetch(`/api/music/songs?random&n=${n}${onlyNames ? `&only_names` : ''}`)
-	).json()
+	const response = await fetchFromAPI(`music/songs?random&n=${n}${onlyNames ? `&only_names` : ''}`)
 	return onlyNames ? response : response.map(transformSong)
 }

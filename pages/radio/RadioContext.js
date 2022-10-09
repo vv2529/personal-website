@@ -14,6 +14,7 @@ const radioContext = createContext(
 			status: 'loading',
 			selectForbidden: true,
 			background: {},
+			title: 'Radio',
 		},
 		internalLets: {
 			setupComplete: false,
@@ -21,7 +22,6 @@ const radioContext = createContext(
 			audio: {},
 			timeoutID: 0,
 			waitingTimeout: 0,
-			startedPreloading: false,
 		},
 		consts: {
 			SSR: !('window' in globalThis),

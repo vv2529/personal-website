@@ -1,4 +1,4 @@
-import { randomShuffle } from '../../scripts/functions'
+import { randomShuffle, fetchFromAPI, rand } from '../../scripts/functions'
 import Model from '../../scripts/Model'
 import { transformSong, getPreloadedAudio } from '../../scripts/music'
 import css from './style.module.scss'
@@ -9,6 +9,27 @@ export default class MusicModel extends Model {
 		const s = time % 60
 		const m = (time - s) / 60
 		return `${m}:${s < 10 ? 0 : ''}${s}`
+	}
+
+	changePage(page) {
+		this.page = page
+		if (this.highlightIndex === -1) {
+			this.scrollTop = 0
+			this.scrollTopChanged = true
+		}
+	}
+
+	showInList() {
+		this.highlightIndex = this.songs.findIndex((song) => song.id === this.songPlaying.id)
+		if (this.highlightIndex === -1) return
+		this.changePage(Math.floor(this.highlightIndex / this.songsPerPage) + 1)
+		setTimeout(() => {
+			this.highlightIndex = -1
+		}, 1000)
+	}
+
+	setTitle(songName) {
+		this.title = songName && songName !== this.defaultSong.name ? `${songName} | Music` : 'Music'
 	}
 
 	createAudio(audio) {
@@ -23,7 +44,7 @@ export default class MusicModel extends Model {
 			if (this.isPreloading) return
 			if (this.justLoaded) {
 				this.justLoaded = false
-				e.target.play().catch(() => {})
+				if (!this.isPausedOnLoad) e.target.play().catch(() => {})
 			}
 			clearTimeout(this.waitingTimeout)
 			this.status = ''
@@ -33,6 +54,7 @@ export default class MusicModel extends Model {
 			if (this.isPreloading) return
 			clearTimeout(this.waitingTimeout)
 			this.waitingTimeout = setTimeout(() => {
+				console.log(this.audio.currentTime)
 				this.status = 'loading'
 			}, 250)
 		}
@@ -65,6 +87,23 @@ export default class MusicModel extends Model {
 			if (!this.songPlaying.paused) this.songPlaying = { ...this.songPlaying, paused: true }
 		}
 
+		this.audio.onended = () => {
+			if (this.isPreloading) return
+			if (!this.isSeeking && this.options.autoplay) {
+				// index = id - 1
+				let index = this.songPlaying.id
+				if (this.options.random) {
+					do {
+						index = rand(this.songs.length)
+					} while (index + 1 === this.songPlaying.id)
+					this.changeSongPlaying(this.songs[index])
+				} else {
+					if (this.songPlaying.id < this.songs.length) this.changeSongPlaying(this.songs[index])
+				}
+				this.showInList()
+			}
+		}
+
 		this.audio.ontimeupdate = (e) => {
 			if (this.isPreloading) return
 			if (!this.isSeeking) this.currentTime = e.target.currentTime
@@ -88,20 +127,23 @@ export default class MusicModel extends Model {
 
 	changeSongPlaying(song) {
 		if (this.songPlaying.id === song.id) return false
-		clearTimeout(this.waitingTimeout)
-		this.status = ''
-		this.waitingTimeout = setTimeout(() => {
-			this.status = 'loading'
-		}, 250)
+		if (!this.controlsAutoShown) {
+			this.controlsShown = true
+			this.controlsAutoShown = true
+		}
+		this.status = 'loading'
 		this.songPlaying = { ...song, paused: true }
 		this.currentTime = 0
 		this.justLoaded = true
 		this.hadError = false
 		this.isPreloading = true
+		this.isPausedOnLoad = false
 		this.audio.pause()
+		this.setTitle(song.name)
 		getPreloadedAudio(song.link, 0, this.audio).then(() => {
 			this.isPreloading = false
 			this.audio.oncanplay({ target: this.audio })
+			this.status = ''
 		})
 	}
 
@@ -116,12 +158,17 @@ export default class MusicModel extends Model {
 	}
 
 	playPause() {
+		if (!this.songPlaying.id) return
+		if (this.isPreloading) {
+			this.isPausedOnLoad = !this.isPausedOnLoad
+			return
+		}
 		if (!this.audio.error && this.audio.paused) this.audio.play().catch(() => {})
 		else this.audio.pause()
 	}
 
 	async getSongs() {
-		const response = await (await fetch('/api/music/songs')).json()
+		const response = await fetchFromAPI('music/songs')
 		this.songs = response.map(transformSong)
 
 		const songs = randomShuffle(this.songs)
@@ -207,6 +254,8 @@ export default class MusicModel extends Model {
 			+o.showSpeedSlider,
 			+o.preservePitch,
 			+o.loop,
+			+o.autoplay,
+			+o.random,
 		]).slice(1, -1)
 		this.options = o
 	}
@@ -219,6 +268,8 @@ export default class MusicModel extends Model {
 			showSpeedSlider: !!o[0],
 			preservePitch: !!o[1],
 			loop: !!o[2],
+			autoplay: !!o[3],
+			random: !!o[4],
 		}
 
 		return o2

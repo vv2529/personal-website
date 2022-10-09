@@ -3,6 +3,7 @@ import { ResponsiveFramework, PageTitle } from '../../components/ResponsiveFrame
 import MusicBackground from '../../components/background/MusicBackground'
 import useRadioModel from './useRadioModel'
 import css from './style.module.scss'
+import { useEffect } from 'react'
 
 const StationOptions = ({ stations }) => {
 	let official = (
@@ -30,15 +31,18 @@ export default function RadioProject() {
 		'status',
 		'selectForbidden',
 		'background',
+		'title',
 	])
 
-	if (!radio.setupComplete) {
-		radio.setup()
-	}
+	useEffect(() => {
+		if (!radio.setupComplete) {
+			radio.setup()
+		}
+	})
 
 	return (
 		<ResponsiveFramework
-			title="Radio"
+			title={radio.title}
 			status={radio.status}
 			background={<MusicBackground data={radio.background} />}
 		>

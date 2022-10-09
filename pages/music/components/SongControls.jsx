@@ -30,10 +30,6 @@ const optionItems = [
 		optionName: 'loop',
 	},
 	{
-		caption: 'Favorite',
-		onClick() {},
-	},
-	{
 		caption: 'Original',
 		onClick() {
 			if (music.songPlaying.original) window.open(music.songPlaying.original)
@@ -42,13 +38,16 @@ const optionItems = [
 	{
 		caption: 'Show in the list',
 		onClick() {
-			music.highlightIndex = music.songs.findIndex((song) => song.id === music.songPlaying.id)
-			if (music.highlightIndex === -1) return
-			music.page = Math.floor(music.highlightIndex / music.songsPerPage) + 1
-			setTimeout(() => {
-				music.highlightIndex = -1
-			}, 1000)
+			music.showInList()
 		},
+	},
+	{
+		caption: 'Random',
+		optionName: 'random',
+	},
+	{
+		caption: 'Autoplay',
+		optionName: 'autoplay',
 	},
 	{
 		caption: 'Download',
@@ -68,7 +67,7 @@ const SongControls = () => {
 	const speedText = `Speed: x${music.speed}`
 
 	return (
-		<div className={css['song-controls']}>
+		<div className={`${css['song-controls']} ${music.controlsShown ? css['shown'] : ''}`}>
 			<div className={css['song-play-control']}>
 				<button className={css['rounded-button']} onClick={() => music.playPause()}>
 					{music.songPlaying.paused ? <FaPlay /> : <FaPause />}

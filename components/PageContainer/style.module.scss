@@ -5,6 +5,10 @@
 	height: 100%;
 	padding: 1em 5% 0;
 
+	&.no-overflow-y {
+		overflow-y: hidden;
+	}
+
 	@media screen and (orientation: landscape) {
 		@media (min-width: 769px) {
 			& {
