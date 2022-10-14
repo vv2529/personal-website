@@ -90,17 +90,7 @@ export default class MusicModel extends Model {
 		this.audio.onended = () => {
 			if (this.isPreloading) return
 			if (!this.isSeeking && this.options.autoplay) {
-				// index = id - 1
-				let index = this.songPlaying.id
-				if (this.options.random) {
-					do {
-						index = rand(this.songs.length)
-					} while (index + 1 === this.songPlaying.id)
-					this.changeSongPlaying(this.songs[index])
-				} else {
-					if (this.songPlaying.id < this.songs.length) this.changeSongPlaying(this.songs[index])
-				}
-				this.showInList()
+				this.playNext()
 			}
 		}
 
@@ -147,6 +137,20 @@ export default class MusicModel extends Model {
 		})
 	}
 
+	playNext() {
+		// index = id - 1
+		let index = this.songPlaying.id
+		if (this.options.random) {
+			do {
+				index = rand(this.songs.length)
+			} while (index + 1 === this.songPlaying.id)
+			this.changeSongPlaying(this.songs[index])
+		} else {
+			if (this.songPlaying.id < this.songs.length) this.changeSongPlaying(this.songs[index])
+		}
+		this.showInList()
+	}
+
 	playCustomURL() {
 		if (!this.customURL) return
 		this.changeSongPlaying({
@@ -158,7 +162,10 @@ export default class MusicModel extends Model {
 	}
 
 	playPause() {
-		if (!this.songPlaying.id) return
+		if (!this.songPlaying.id) {
+			this.playNext()
+			return
+		}
 		if (this.isPreloading) {
 			this.isPausedOnLoad = !this.isPausedOnLoad
 			return
