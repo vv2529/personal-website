@@ -1,19 +1,13 @@
 @import '../../scss/_var';
 
 .page-container {
-	width: 100%;
-	height: 100%;
-	padding: 1em 5% 0;
+	width: 769px;
+	min-width: 70%;
+	max-width: 100%;
+	margin: 0 auto;
+	padding: 1.25em 5%;
 
 	&.no-overflow-y {
 		overflow-y: hidden;
-	}
-
-	@media screen and (orientation: landscape) {
-		@media (min-width: 769px) {
-			& {
-				padding: 1em 15% 0;
-			}
-		}
 	}
 }

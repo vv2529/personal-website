@@ -19,6 +19,7 @@ body {
 a {
 	text-decoration: none;
 	color: hsl(240, 50%, 70%);
+	cursor: pointer;
 
 	&:hover,
 	&:focus {
@@ -31,8 +32,8 @@ a {
 	}
 }
 
-a {
-	cursor: pointer;
+p {
+	margin: 0.25em 0;
 }
 
 .visually-hidden {
@@ -48,7 +49,6 @@ a {
 .transparent {
 	opacity: 0;
 }
-
 .no-bullets {
 	list-style: none;
 	margin: 0;
@@ -58,12 +58,9 @@ a {
 	display: flex;
 	align-items: center;
 }
-.link-icon {
-	margin: 0 10px 0 5px;
-}
-
-.no-margin-bottom {
-	margin-bottom: 0;
+.big-text {
+	font-size: 1.25em;
+	font-weight: 600;
 }
 
 @mixin slider-track {

@@ -46,26 +46,32 @@
 	background: $primary-color;
 }
 
-.section-caption {
-	color: darken($color: #fff, $amount: 25);
-}
-.section-content {
-	display: flex;
-	justify-content: space-between;
-	align-items: baseline;
-	flex-wrap: wrap;
-	margin: 0 5px;
-	font-size: 20px;
-}
-.section-name {
-	margin: 5px 0;
-}
-.section-extra {
-	margin-left: 5px;
-	font-size: 16px;
-}
-.section-extra-icon {
-	font-size: 12px;
+.section {
+	&-caption {
+		color: darken($color: #fff, $amount: 25);
+	}
+
+	&-content {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		flex-wrap: wrap;
+		margin: 0 5px;
+		font-size: 20px;
+	}
+
+	&-name {
+		margin: 5px 0;
+	}
+
+	&-extra {
+		margin-left: 5px;
+		font-size: 16px;
+
+		&-icon {
+			font-size: 12px;
+		}
+	}
 }
 
 @keyframes rainbow {

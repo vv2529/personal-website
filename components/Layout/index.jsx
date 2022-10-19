@@ -5,7 +5,7 @@ import Nav from '../Nav'
 const Layout = ({ children }) => {
 	const router = useRouter()
 
-	return router.pathname === '/' ? (
+	return ['/', '/404'].includes(router.pathname) ? (
 		<div className={css['container']}>
 			<Nav />
 			<main className={css['main']}>{children}</main>
