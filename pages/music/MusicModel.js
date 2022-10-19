@@ -102,14 +102,14 @@ export default class MusicModel extends Model {
 
 	changeVolume(newVolume) {
 		newVolume = Math.min(Math.max(newVolume, 0), 1)
-		localStorage.music_volume = newVolume
+		localStorage.music_volume = newVolume.toFixed(2)
 		this.audio.volume = newVolume
 		this.volume = newVolume
 	}
 
 	changeSpeed(newSpeed) {
 		newSpeed = Math.round(Math.min(Math.max(newSpeed, 0.5), 2) * 100) / 100
-		localStorage.music_speed = newSpeed
+		localStorage.music_speed = newSpeed.toFixed(2)
 		this.audio.defaultPlaybackRate = newSpeed
 		this.audio.playbackRate = newSpeed
 		this.speed = newSpeed

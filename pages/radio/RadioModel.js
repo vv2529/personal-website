@@ -43,10 +43,10 @@ export default class RadioModel extends Model {
 			)
 				.then(() => {})
 				.catch(() => {
-					delete songs[i].preloaded
+					delete songs[i]?.preloaded
 				})
 				.finally(() => {
-					delete songs[i].preloading
+					delete songs[i]?.preloading
 					this.preloadSong(songs, i + 1)
 				})
 		} else this.preloadSong(songs, i + 1)
@@ -63,6 +63,7 @@ export default class RadioModel extends Model {
 				let response
 				try {
 					response = await fetchFromAPI(`radio/current_songs?station=${stationId}`)
+					if (!response) throw Error('No response fetched')
 				} catch (e) {
 					if (secondTry) this.status = 'error'
 					else return await this.getSongs.call(this, stationId, true)
@@ -90,17 +91,20 @@ export default class RadioModel extends Model {
 
 				if (this.savedSongs[stationId]) {
 					try {
-						if (this.savedSongs[stationId][0].startTime !== songs[0].startTime) {
+						if (this.savedSongs[stationId][1].id === songs[0].id) {
 							this.savedSongs[stationId].shift()
 						}
 
-						if (this.savedSongs[stationId][0].startTime === songs[0].startTime) {
+						if (this.savedSongs[stationId][0].id === songs[0].id) {
 							this.savedSongs[stationId][2] = songs[2]
 							songs = this.savedSongs[stationId]
+							songs[2].startTime = songs[1].startTime + songs[1].duration + this.songInterval
 						} else {
 							this.savedSongs[stationId] = songs
 						}
-					} catch (e) {}
+					} catch (e) {
+						console.error(e)
+					}
 				} else this.savedSongs[stationId] = songs
 
 				this.preloadSong(songs, 0)
@@ -189,7 +193,6 @@ export default class RadioModel extends Model {
 					this.preloadSong(this.savedSongs[id], playingIndex)
 					this.audio.src = saved.link
 				} else if (!saved.preloading) {
-					this.audio.src += ''
 					this.audio = saved.preloaded
 					this.audio.volume = this.volume
 
