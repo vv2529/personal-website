@@ -1,7 +1,7 @@
 import { randomShuffle, fetchFromAPI, rand } from '../../scripts/functions'
 import Model from '../../scripts/Model'
 import { transformSong, getPreloadedAudio } from '../../scripts/music'
-import css from './style.module.scss'
+import css from '../../scss/music.module.scss'
 
 export default class MusicModel extends Model {
 	numberToTime(time) {

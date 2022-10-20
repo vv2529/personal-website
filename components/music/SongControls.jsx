@@ -1,7 +1,7 @@
-import useMusicModel from '../useMusicModel'
+import useMusicModel from '../../models/music/useMusicModel'
 import { FaPlay, FaPause, FaEllipsisH } from 'react-icons/fa'
 import OptionItem from './OptionItem'
-import css from '../style.module.scss'
+import css from '../../scss/music.module.scss'
 
 let music = {}
 const optionItems = [

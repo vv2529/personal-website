@@ -1,13 +1,12 @@
-import useMusicModel from './useMusicModel'
+import useMusicModel from '../../models/music/useMusicModel'
 import { ResponsiveFramework, PageTitle } from '../../components/ResponsiveFramework'
 import MusicBackground from '../../components/background/MusicBackground'
-import TabNav from './components/TabNav'
-import SongContainer from './components/SongContainer'
-import Filters from './components/Filters'
-import SongControls from './components/SongControls'
-import EnterURLOverlay from './components/EnterURLOverlay'
+import TabNav from '../../components/music/TabNav'
+import SongContainer from '../../components/music/SongContainer'
+import Filters from '../../components/music/Filters'
+import SongControls from '../../components/music/SongControls'
+import EnterURLOverlay from '../../components/music/EnterURLOverlay'
 import { useEffect } from 'react'
-import css from './style.module.scss'
 
 export default function MusicProject() {
 	const music = useMusicModel([

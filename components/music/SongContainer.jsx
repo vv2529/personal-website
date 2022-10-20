@@ -1,9 +1,9 @@
 import { useRef } from 'react'
-import useMusicModel from '../useMusicModel'
+import useMusicModel from '../../models/music/useMusicModel'
 import { AiFillCaretLeft, AiFillCaretRight, AiFillCaretDown, AiFillCaretUp } from 'react-icons/ai'
 import { FaSearch } from 'react-icons/fa'
 import Song from './Song'
-import css from '../style.module.scss'
+import css from '../../scss/music.module.scss'
 
 const SongContainer = () => {
 	const music = useMusicModel()

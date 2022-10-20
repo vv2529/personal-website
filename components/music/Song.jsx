@@ -1,6 +1,6 @@
-import useMusicModel from '../useMusicModel'
+import useMusicModel from '../../models/music/useMusicModel'
 import { FaExternalLinkAlt, FaPlay, FaPause } from 'react-icons/fa'
-import css from '../style.module.scss'
+import css from '../../scss/music.module.scss'
 
 const Song = ({ song = {}, highlighted }) => {
 	const music = useMusicModel()

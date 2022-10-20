@@ -1,5 +1,5 @@
-import useMusicModel from '../useMusicModel'
-import css from '../style.module.scss'
+import useMusicModel from '../../models/music/useMusicModel'
+import css from '../../scss/music.module.scss'
 import { Fieldset, Checkbox } from './FormElements'
 
 const Filters = () => {

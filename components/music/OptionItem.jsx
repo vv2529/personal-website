@@ -1,6 +1,6 @@
-import useMusicModel from '../useMusicModel'
+import useMusicModel from '../../models/music/useMusicModel'
 import { ImCheckmark, ImCheckmark2 } from 'react-icons/im'
-import css from '../style.module.scss'
+import css from '../../scss/music.module.scss'
 
 const OptionItem = ({ caption = '', onClick = () => {}, optionName, index }) => {
 	const music = useMusicModel()

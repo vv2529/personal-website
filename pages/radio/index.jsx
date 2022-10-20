@@ -1,8 +1,8 @@
 import { FaExternalLinkAlt } from 'react-icons/fa'
 import { ResponsiveFramework, PageTitle } from '../../components/ResponsiveFramework'
 import MusicBackground from '../../components/background/MusicBackground'
-import useRadioModel from './useRadioModel'
-import css from './style.module.scss'
+import useRadioModel from '../../models/radio/useRadioModel'
+import css from '../../scss/radio.module.scss'
 import { useEffect } from 'react'
 
 const StationOptions = ({ stations }) => {
