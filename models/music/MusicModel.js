@@ -236,7 +236,7 @@ export default class MusicModel extends Model {
 	}
 
 	getLocalFilters() {
-		if (!localStorage.music_filters) return
+		if (!localStorage.music_filters) return this.filters
 
 		const f = JSON.parse(`[${localStorage.music_filters}]`)
 		const f2 = {
@@ -268,7 +268,7 @@ export default class MusicModel extends Model {
 	}
 
 	getLocalOptions() {
-		if (!localStorage.music_options) return
+		if (!localStorage.music_options) return this.options
 
 		const o = JSON.parse(`[${localStorage.music_options}]`)
 		const o2 = {

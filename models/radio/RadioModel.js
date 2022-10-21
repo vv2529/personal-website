@@ -7,8 +7,17 @@ export default class RadioModel extends Model {
 		return Date.now() / 1000
 	}
 
-	isSongOfTheDayPlaying() {
-		return this.currentSongs[0].id === this.songOfTheDay.id && this.songOfTheDay.id > 0
+	checkSongOfTheDayPlaying() {
+		this.songOfTheDayPlaying =
+			this.currentSong.id === this.songOfTheDay.id && this.songOfTheDay.id > 0
+	}
+
+	updateCurrentSongs(songs) {
+		if (songs[0] && this.currentSong.id !== songs[0].id) {
+			this.currentSong = songs[0]
+			this.checkSongOfTheDayPlaying()
+		}
+		if (songs[1] && this.nextSong.id !== songs[1].id) this.nextSong = songs[1]
 	}
 
 	createSingleAudio() {
@@ -122,8 +131,8 @@ export default class RadioModel extends Model {
 		this.audio.pause()
 		if (id !== this.currentStation) {
 			this.status = ''
+			this.updateCurrentSongs([this.defaultSong, this.defaultSong])
 			this.currentStation = id
-			this.currentSongs = [this.defaultSong, this.defaultSong, this.defaultSong]
 			this.setTitle()
 			this.selectForbidden = true
 			clearTimeout(this.timeoutID)
@@ -132,7 +141,6 @@ export default class RadioModel extends Model {
 
 		const songs = await this.getSongs.call(this, id)
 
-		this.currentSongs = songs
 		if (this.selectForbidden)
 			setTimeout(() => {
 				this.selectForbidden = false
@@ -147,7 +155,7 @@ export default class RadioModel extends Model {
 		if (!id || id !== this.currentStation) return
 
 		if (new Date().getDate() !== this.songOfTheDay.day) this.changeSongOfTheDay()
-		this.currentSongs = [...this.savedSongs[id]]
+		this.updateCurrentSongs(this.savedSongs[id])
 		clearTimeout(this.waitingTimeout)
 		this.audio.pause()
 
@@ -292,6 +300,7 @@ export default class RadioModel extends Model {
 		song.day = day
 		this.songOfTheDay = song
 		this.status = ''
+		this.checkSongOfTheDayPlaying()
 	}
 
 	changeVolume(newVolume) {

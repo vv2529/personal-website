@@ -6,17 +6,22 @@ import Song from './Song'
 import css from '../../scss/music.module.scss'
 
 const SongContainer = () => {
-	const music = useMusicModel()
+	const music = useMusicModel(['songs', 'page', 'highlightIndex'])
+
+	const hi = music.highlightIndex - (music.page - 1) * music.songsPerPage,
+		height = 50,
+		padding = 30,
+		body = useRef(null)
+
+	if (music.tab !== 0) {
+		return false
+	}
 
 	const songs = music.filterSongs()
 	const changePage = (value) => music.changePage(Math.min(Math.max(value, 1), pages))
 	const setSearch = (e) => (music.filters = { ...music.filters, search: e.target.value })
 	const pages = Math.ceil(songs.length / music.songsPerPage) || 1
 
-	const hi = music.highlightIndex - (music.page - 1) * music.songsPerPage,
-		height = 50,
-		padding = 30,
-		body = useRef(null)
 	if (body.current) {
 		if (music.highlightIndex !== -1) body.current.scrollTop = height * hi - padding
 		if (music.scrollTopChanged) {

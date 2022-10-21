@@ -2,7 +2,7 @@ import useMusicModel from '../../models/music/useMusicModel'
 import css from '../../scss/music.module.scss'
 
 const EnterURLOverlay = () => {
-	const music = useMusicModel()
+	const music = useMusicModel(['customURL'])
 
 	return (
 		<div className={css['overlay']}>

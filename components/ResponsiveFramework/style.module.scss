@@ -11,17 +11,16 @@
 .inner-container {
 	position: relative;
 	height: 100%;
+	margin: 0 auto;
 	display: flex;
 	flex-direction: column;
 	background: rgba($primary-dark-3, $alpha: 0.75);
 
-	@media screen and (orientation: landscape) {
-		@media (min-width: 769px) {
-			& {
-				width: 769px;
-				margin: 0 auto;
-				outline: 1px solid #ddd;
-			}
+	@media (min-width: 769px) {
+		& {
+			width: 769px;
+			border: 1px solid #ddd;
+			border-width: 0 1px;
 		}
 	}
 }

@@ -8,8 +8,10 @@ const radioContext = createContext(
 		lets: {
 			stations: [],
 			currentStation: 0,
-			currentSongs: [defaultSong, defaultSong, defaultSong],
+			currentSong: defaultSong,
+			nextSong: defaultSong,
 			songOfTheDay: defaultSong,
+			songOfTheDayPlaying: false,
 			volume: 1,
 			status: 'loading',
 			selectForbidden: true,

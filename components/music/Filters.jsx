@@ -5,10 +5,13 @@ import { Fieldset, Checkbox } from './FormElements'
 const Filters = () => {
 	const music = useMusicModel()
 
+	if (music.tab !== 1) {
+		return false
+	}
+
 	return (
 		<div className={css['page-section']}>
 			<div className={css['offset-group']}>
-				<Checkbox label="Favorite" />
 				<Checkbox
 					label="Hard"
 					checked={music.filters.hard}
