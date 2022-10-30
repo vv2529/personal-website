@@ -111,7 +111,7 @@ const Volume = () => {
 				min="0"
 				max="1"
 				step="0.01"
-				value={radio.volume}
+				defaultValue={radio.volume}
 				onChange={(e) => radio.changeVolume(e.target.value)}
 			/>
 		</div>

@@ -47,6 +47,15 @@
 			color: darken($color: #bbb, $amount: 30);
 		}
 
+		&-current {
+			text-decoration: underline;
+
+			&:hover,
+			&:focus {
+				text-decoration: underline;
+			}
+		}
+
 		&-primary {
 			padding: 0 30px 0 20px;
 			background: $primary-dark-2;

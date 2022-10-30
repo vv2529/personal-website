@@ -5,7 +5,20 @@
 	flex-direction: column;
 	width: 100vw;
 	height: 100vh;
+	height: calc(var(--vh, 1vh) * 100);
 	overflow: hidden;
+}
+
+.page-container {
+	width: 769px;
+	min-width: 70%;
+	max-width: 100%;
+	margin: 0 auto;
+	padding: 1.25em 5%;
+
+	&.no-overflow-y {
+		overflow-y: hidden;
+	}
 }
 
 .main {

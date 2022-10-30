@@ -6,22 +6,22 @@
 	top: 0;
 	width: 100vw;
 	height: 100vh;
+	height: calc(var(--vh, 1vh) * 100);
 	z-index: -9;
-}
+	overflow: hidden;
 
-.bg-text {
-	position: fixed;
-	transform: translate(-50%, -50%);
-	white-space: nowrap;
-	font-family: Georgia;
-}
+	&-text {
+		position: fixed;
+		transform: translate(-50%, -50%);
+		white-space: nowrap;
+		font-family: Georgia;
+	}
 
-.bg-text[data-wide-screen-only] {
-	display: none;
-}
+	&-text[data-wide-screen-only] {
+		display: none;
 
-@media (min-width: 769px) {
-	.bg-text[data-wide-screen-only] {
-		display: block;
+		@media (min-width: 769px) {
+			display: block;
+		}
 	}
 }

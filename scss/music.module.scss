@@ -132,6 +132,7 @@
 	@mixin slider-track {
 		height: 1.5em;
 		border-radius: 0;
+		box-sizing: content-box;
 		background: linear-gradient(
 			90deg,
 			$primary-dark-2,
@@ -143,9 +144,11 @@
 	@mixin slider-thumb {
 		width: 0.25em;
 		height: 1.5em;
+		margin-top: -2px;
 		border: 2px solid #666;
 		border-radius: 0;
 		box-shadow: none;
+		box-sizing: content-box;
 		background: $primary-dark-2;
 	}
 	@mixin slider-thumb-focus {
@@ -209,7 +212,20 @@
 
 .song-volume,
 .song-speed {
-	min-width: 6.5em;
+	min-width: 4em;
+}
+.extra-text {
+	display: none;
+}
+
+@media (min-width: 450px) {
+	.song-volume,
+	.song-speed {
+		min-width: 6.5em;
+	}
+	.extra-text {
+		display: inline;
+	}
 }
 
 .song-time {

@@ -1,4 +1,4 @@
-import PageContainer from '../PageContainer'
+import Layout from '../Layout'
 import css from './style.module.scss'
 
 const ResponsiveFramework = ({
@@ -10,7 +10,7 @@ const ResponsiveFramework = ({
 	verticalScroll,
 }) => {
 	return (
-		<PageContainer
+		<Layout
 			title={title}
 			classNames={[...classNames, css['page-container']]}
 			verticalScroll={verticalScroll}
@@ -30,7 +30,7 @@ const ResponsiveFramework = ({
 					}`}
 				></div>
 			</div>
-		</PageContainer>
+		</Layout>
 	)
 }
 

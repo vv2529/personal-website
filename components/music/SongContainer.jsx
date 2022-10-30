@@ -78,8 +78,11 @@ const SongContainer = () => {
 						value={music.page}
 						onChange={(e) => changePage(e.target.value)}
 					/>{' '}
-					of {pages}, songs {(music.page - 1) * music.songsPerPage + 1} to{' '}
-					{Math.min(music.page * music.songsPerPage, songs.length)} of {songs.length}.
+					of {pages}
+					<span className={css['extra-text']}>
+						, songs {(music.page - 1) * music.songsPerPage + 1} to{' '}
+						{Math.min(music.page * music.songsPerPage, songs.length)} of {songs.length}.
+					</span>
 				</div>
 				<button
 					className={css['btn-arrow']}

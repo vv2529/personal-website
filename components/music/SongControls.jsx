@@ -26,9 +26,17 @@ const optionItems = [
 	{
 		caption: 'Loop',
 		onClick() {
-			music.audio.loop = music.options.loop
+			if (!music.isPreloading) music.audio.loop = music.options.loop
 		},
 		optionName: 'loop',
+	},
+	{
+		caption: 'Reset options',
+		onClick() {
+			music.options = { ...music.defaultOptions }
+			music.changeVolume(1)
+			music.changeSpeed(1)
+		},
 	},
 	{
 		caption: 'Original',
@@ -59,14 +67,15 @@ const optionItems = [
 ]
 
 const Volume = () => {
-	music = useMusicModel(['volume', 'currentTime'])
+	music = useMusicModel(['volume'])
 
-	const volumeText = `Volume: ${Math.round(music.volume * 100)}%`
+	const volumeText = `${Math.round(music.volume * 100)}%`
 
 	return (
 		<div className={css['song-volume']}>
-			<div className={css['song-volume-caption']} title={volumeText}>
-				{volumeText}
+			<div className={css['song-volume-caption']} title={'Volume: ' + volumeText}>
+				<span className={css['extra-text']}>Volume: </span>
+				<span>{volumeText}</span>
 			</div>
 			<input
 				className={css['song-volume-slider']}
@@ -74,7 +83,7 @@ const Volume = () => {
 				min="0"
 				max="1"
 				step="0.01"
-				value={music.volume}
+				defaultValue={music.volume}
 				onChange={(e) => music.changeVolume(e.target.value)}
 			/>
 		</div>
@@ -84,13 +93,14 @@ const Volume = () => {
 const Speed = () => {
 	music = useMusicModel(['speed'])
 
-	const speedText = `Speed: x${music.speed}`
+	const speedText = `x${music.speed}`
 
 	return (
 		music.options.showSpeedSlider && (
 			<div className={css['song-speed']}>
-				<div className={css['song-speed-caption']} title={speedText}>
-					{speedText}
+				<div className={css['song-speed-caption']} title={'Speed: ' + speedText}>
+					<span className={css['extra-text']}>Speed: </span>
+					<span>{speedText}</span>
 				</div>
 				<input
 					className={css['song-speed-slider']}
@@ -98,7 +108,7 @@ const Speed = () => {
 					min="0.5"
 					max="2"
 					step="0.01"
-					value={music.speed}
+					defaultValue={music.speed}
 					onChange={(e) => music.changeSpeed(e.target.value)}
 				/>
 			</div>
@@ -138,11 +148,19 @@ const Options = () => {
 }
 
 const SongControls = () => {
-	music = useMusicModel(['options'])
+	music = useMusicModel(['options', 'currentTime'])
 
 	const duration = isFinite(music.audio?.duration)
 		? Math.max(music.audio?.duration, music.songPlaying.duration)
 		: music.songPlaying.duration
+
+	const startSeeking = () => {
+		music.isSeeking = true
+	}
+	const stopSeeking = () => {
+		music.audio.currentTime = music.currentTime
+		music.isSeeking = false
+	}
 
 	return (
 		<div className={`${css['song-controls']} ${music.controlsShown ? css['shown'] : ''}`}>
@@ -170,13 +188,10 @@ const SongControls = () => {
 					onChange={(e) => {
 						if (music.isSeeking) music.currentTime = e.target.value
 					}}
-					onMouseDown={() => {
-						music.isSeeking = true
-					}}
-					onMouseUp={() => {
-						music.audio.currentTime = music.currentTime
-						music.isSeeking = false
-					}}
+					onPointerDown={startSeeking}
+					onPointerUp={stopSeeking}
+					onTouchStart={startSeeking}
+					onTouchEnd={stopSeeking}
 				/>
 			</div>
 			<div className={css['song-time']}>

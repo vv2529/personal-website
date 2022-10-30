@@ -1,5 +1,5 @@
-import PageContainer from '../components/PageContainer'
+import PageLayout from '../components/PageLayout'
 
 export default function Error404() {
-	return <PageContainer>Error 404: not found</PageContainer>
+	return <PageLayout>Error 404: not found</PageLayout>
 }

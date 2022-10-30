@@ -1,4 +1,4 @@
-import PageContainer from '../components/PageContainer'
+import PageLayout from '../components/PageLayout'
 import { FaYoutube, FaDiscord, FaGithub } from 'react-icons/fa'
 import { SiGmail } from 'react-icons/si'
 import ReactMarkdown from 'react-markdown'
@@ -39,7 +39,7 @@ const News = () => {
 
 	return (
 		<ul className={`${css['section-content']} ${css['news-list']}`}>
-			{news.length === 0 ? '...' : news.map((newsItem, i) => <NewsItem key={i} {...newsItem} />)}
+			{news.length === 0 ? '' : news.map((newsItem, i) => <NewsItem key={i} {...newsItem} />)}
 		</ul>
 	)
 }
@@ -55,7 +55,7 @@ const NewsItem = ({ date, text }) => (
 
 export default function Home() {
 	return (
-		<PageContainer title="vv2529">
+		<PageLayout title="vv2529">
 			<div className={`${css['section']} ${css['topmost']}`}>
 				<div className={css['section-headline']}>
 					<span className="big-text">Hi!</span>
@@ -100,6 +100,6 @@ export default function Home() {
 				<div className={css['section-headline']}>News</div>
 				<News />
 			</div>
-		</PageContainer>
+		</PageLayout>
 	)
 }

@@ -54,7 +54,6 @@ export default class MusicModel extends Model {
 			if (this.isPreloading) return
 			clearTimeout(this.waitingTimeout)
 			this.waitingTimeout = setTimeout(() => {
-				console.log(this.audio.currentTime)
 				this.status = 'loading'
 			}, 250)
 		}
@@ -129,9 +128,11 @@ export default class MusicModel extends Model {
 		this.isPreloading = true
 		this.isPausedOnLoad = false
 		this.audio.pause()
+		this.audio.loop = false
 		this.setTitle(song.name)
 		getPreloadedAudio(song.link, 0, this.audio).then(() => {
 			this.isPreloading = false
+			this.audio.loop = this.options.loop
 			this.audio.oncanplay({ target: this.audio })
 			this.status = ''
 		})
@@ -292,9 +293,25 @@ export default class MusicModel extends Model {
 			this.options = this.getLocalOptions()
 			this.createAudio()
 
+			const seekBackward = () => {
+				this.audio.currentTime = Math.max(this.currentTime - 10, 0)
+				this.currentTime = this.audio.currentTime
+			}
+			const seekForward = () => {
+				this.audio.currentTime = this.currentTime + 10
+				this.currentTime = this.audio.currentTime
+			}
+
 			const click = () => {
 				this.userClicked = true
 				window.removeEventListener('click', click)
+
+				navigator.mediaSession.setActionHandler('previoustrack', () => {
+					seekBackward()
+				})
+				navigator.mediaSession.setActionHandler('nexttrack', () => {
+					this.playNext()
+				})
 			}
 			window.addEventListener('click', click)
 
@@ -308,17 +325,19 @@ export default class MusicModel extends Model {
 			}
 
 			window.onkeydown = (e) => {
-				if (!this.songPlaying.id || this.tab !== 0 || ['search', 'text'].includes(e.target.type))
+				if (
+					!this.songPlaying.id ||
+					this.tab !== 0 ||
+					['search', 'text', 'number'].includes(e.target.type)
+				)
 					return
 
 				if (e.key === ' ') {
 					this.playPause()
 				} else if (e.key === 'ArrowLeft') {
-					this.audio.currentTime = this.currentTime - 10
-					this.currentTime = this.audio.currentTime
+					seekBackward()
 				} else if (e.key === 'ArrowRight') {
-					this.audio.currentTime = this.currentTime + 10
-					this.currentTime = this.audio.currentTime
+					seekForward()
 				} else if (e.key === 'ArrowDown') {
 					if (e.ctrlKey) {
 						this.changeSpeed(this.speed - 0.1)

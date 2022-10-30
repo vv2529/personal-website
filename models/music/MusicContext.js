@@ -66,6 +66,7 @@ const musicContext = createContext(
 			SSR: !('window' in globalThis),
 			songsPerPage: 50,
 			defaultSong,
+			defaultOptions,
 		},
 	})
 )

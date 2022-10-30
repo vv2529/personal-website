@@ -1,17 +1,42 @@
-import { useRouter } from 'next/router'
 import css from './style.module.scss'
-import Nav from '../Nav'
+import Meta from '../Meta'
 
-const Layout = ({ children }) => {
-	const router = useRouter()
+const Main = ({ children }) => <main className={css['main']}>{children}</main>
+const Hollow = ({ children }) => <>{children}</>
 
-	return ['/', '/404'].includes(router.pathname) ? (
+let setupComplete = false
+
+const resize = () => {
+	let vh = window.innerHeight * 0.01
+	document.documentElement.style.setProperty('--vh', `${vh}px`)
+}
+
+const setup = () => {
+	if (!setupComplete) {
+		setupComplete = true
+
+		if ('window' in globalThis && 'ontouchstart' in globalThis) {
+			resize()
+			window.addEventListener('resize', resize)
+		}
+	}
+}
+
+const Layout = ({ children, title, classNames = [], verticalScroll = true, Nav, wrap = false }) => {
+	if (!verticalScroll) classNames.push(css['no-overflow-y'])
+
+	const Wrapper = wrap ? Main : Hollow
+
+	setup()
+
+	return (
 		<div className={css['container']}>
-			<Nav />
-			<main className={css['main']}>{children}</main>
+			<Meta title={title} />
+			{Nav ? <Nav /> : ''}
+			<Wrapper>
+				<div className={[...classNames, css['page-container']].join(' ')}>{children}</div>
+			</Wrapper>
 		</div>
-	) : (
-		<div className={css['container']}>{children}</div>
 	)
 }
 
